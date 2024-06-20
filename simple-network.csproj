@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <!-- <PackageReference Include="GtkSharp" Version="3.24.24.95" /> -->
+    <PackageReference Include="ImGui.NET" Version="1.90.8.1" />
     <PackageReference Include="opentk" Version="4.8.2" />
   </ItemGroup>
 

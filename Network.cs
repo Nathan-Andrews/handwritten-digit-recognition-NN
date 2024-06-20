@@ -2,28 +2,55 @@
 namespace simple_network {
 
     public class Network {
-        private static float weight_1_1 = -0.3f; // sample values
-        private static float weight_1_2 = -0.8f; // sample values
+        Layer[] layers;
 
-        private static float weight_2_1 = 0; // sample values
-        private static float weight_2_2 = 0.0f; // sample values
+        public Network(params int[] layerSizes) {
+            layers = new Layer[layerSizes.Length - 1];
 
-        private static float bias_1 = 0.2f; // sample values
-        private static float bias_2 = 0;
-
-        public Network() {
-            
+            for (int i = 0; i < layers.Length; i++) {
+                layers[i] = new Layer(layerSizes[i],layerSizes[i+1]);
+            }
         }
+        // public Network(params int[] layerSizes) {
+        //     layers = new Layer[layerSizes.Length - 1];
+
+        //     // Console.WriteLine(layerSizes.Length);
+
+        //     // for (int i = 0; i < layers.Length; i++) {
+        //     //     layers[i] = new Layer(layerSizes[i],layerSizes[i+1]);
+        //     // }
+        //     layers[0] = new Layer(layerSizes[0],layerSizes[1]);
+        //     float[] b = {0.3f,-0.6f,0.5f};
+        //     layers[0].biases = b;
+        //     float[,] w = new float[2,3]
+        //     w = {{0.0f,-0.3f},{-2.4f,-0.2f,0.7f}};
+        //     layers[0].weights = w;
+        // }
         
-        public static int ActivationFunction(float input_1, float input_2) {
-            return (input_1 > input_2) ? 0 : 1;
+        public static int PickClass(float[] inputs) {
+            int maxIndex = 0;
+            for (int i = 0; i < inputs.Length; i++) {
+                if (inputs[i] > inputs[maxIndex]) maxIndex = i;
+            }
+            return maxIndex;
         }
 
-        public static int Classify(float input_1, float input_2) {
-            float output_1 = input_1 * weight_1_1 + input_2 * weight_2_1 + bias_1;
-            float output_2 = input_2 * weight_1_2 + input_2 * weight_2_2 + bias_2;
+        public static float ActivationFunction(float input) {
+            return 1 / (1 + (float)Math.Exp(input));
+        }
 
-            return ActivationFunction(output_1, output_2);
+        float[] GetOutputs(float[] inputs) {
+            foreach (Layer layer in layers) {
+                inputs = layer.GetLayerOutputs(inputs);
+            }
+
+            return inputs;
+        }
+
+        public int Classify(float[] inputs) {
+            float[] outputs = GetOutputs(inputs);
+
+            return PickClass(outputs);
         }
     }
 }

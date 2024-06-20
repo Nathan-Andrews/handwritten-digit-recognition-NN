@@ -21,6 +21,8 @@ namespace simple_network {
         private float _pointRadius = 0.02f;
         private int _pointCount = 0;
 
+        private Network network = new Network(2,3,2);
+
         public Visualize(int width, int height, string title) : base(GameWindowSettings.Default, new NativeWindowSettings() { ClientSize = new Vector2i(width, height), Title = title })
         {
         }
@@ -116,9 +118,12 @@ namespace simple_network {
             {
                 for (int x = 0; x < width; x++)
                 {
-                    float inputX = (float)x / width * 2.0f - 1.0f;
-                    float inputY = (float)y / height * 2.0f - 1.0f;
-                    int classification = Network.Classify(inputX, inputY);
+                    // float inputX = (float)x / width * 2.0f - 1.0f;
+                    // float inputY = (float)y / height * 2.0f - 1.0f;
+                    float[] input = new float[2];
+                    input[0] = (float)x / width * 2.0f - 1.0f;
+                    input[1] = (float)y / height * 2.0f - 1.0f;
+                    int classification = network.Classify(input);
 
                     int index = (y * width + x) * 3;
                     if (classification == 0)
