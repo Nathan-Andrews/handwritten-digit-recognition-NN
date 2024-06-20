@@ -4,11 +4,12 @@ out vec4 FragColor;
 uniform vec2 pointCenters[10];
 uniform int pointClasses[10];
 uniform float pointRadius;
+uniform int pointCount;
 
 void main()
 {
 
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < pointCount; i++) {
         float distance = length(ourPosition - pointCenters[i]);
 
         if (distance < pointRadius) {

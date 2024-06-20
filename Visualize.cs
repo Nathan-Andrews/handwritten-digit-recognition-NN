@@ -18,6 +18,7 @@ public class Visualize : GameWindow
     private int[] _pointsClasses = new int[10];
     private float _pointRadius = 0.02f;
     private int _boundryTexture;
+    private int _pointCount = 0;
 
     // private float[,] _boundryTexture = 
 
@@ -84,14 +85,6 @@ public class Visualize : GameWindow
         // Unbind texture
         GL.BindTexture(TextureTarget.Texture2D, 0);
 
-        _pointsArray[0] = new Vector2(-0.5f, 0.5f);
-        _pointsArray[1] = new Vector2(0.5f, 0.5f);
-        _pointsArray[2] = new Vector2(0.0f, -0.5f);
-
-        _pointsClasses[0] = 1;
-        _pointsClasses[1] = 1;
-        _pointsClasses[2] = 0;
-
         // Set clear color
         GL.ClearColor(Color4.CornflowerBlue);
     }
@@ -107,6 +100,8 @@ public class Visualize : GameWindow
 
             i++;
         }
+
+        _pointCount = i;
     }
 
     private void UpdateDecisionBoundaryTexture()
@@ -129,15 +124,15 @@ public class Visualize : GameWindow
                 int index = (y * width + x) * 3;
                 if (classification == 0)
                 {
-                    data[index] = redColor.X;
-                    data[index + 1] = redColor.Y;
-                    data[index + 2] = redColor.Z;
-                }
-                else
-                {
                     data[index] = blueColor.X;
                     data[index + 1] = blueColor.Y;
                     data[index + 2] = blueColor.Z;
+                }
+                else
+                {
+                    data[index] = redColor.X;
+                    data[index + 1] = redColor.Y;
+                    data[index + 2] = redColor.Z;
                 }
             }
         }
@@ -157,6 +152,9 @@ public class Visualize : GameWindow
 
         int classLocation = GL.GetUniformLocation(_pointShaderProgram,"pointClasses");
         GL.Uniform1(classLocation,_pointsClasses.Length,_pointsClasses);
+
+        int countLocation = GL.GetUniformLocation(_pointShaderProgram,"pointCount");
+        GL.Uniform1(countLocation,_pointCount);
     }
 
     protected override void OnRenderFrame(FrameEventArgs e)
