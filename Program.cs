@@ -7,7 +7,7 @@ namespace simple_network {
             
             using (var window = new Visualize(800, 800, "OpenTK Shaders"))
             {
-                window.addPoints(dataPoints);
+                window.AddPoints(dataPoints);
                 window.Run();
             }
         }
