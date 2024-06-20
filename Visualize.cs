@@ -13,16 +13,13 @@ namespace simple_network {
         private int _boundryShaderProgram;
         private int _pointShaderProgram;
         private int _boundryVertexArrayObject;
+        private int _boundryTexture;
         private int _pointVertexArrayObject;
         private int _pointVertexBufferObject;
-        // private Vector2 _pointCenter = new Vector2(0.4f, 0.1f);
         private Vector2[] _pointsArray = new Vector2[10];
         private int[] _pointsClasses = new int[10];
         private float _pointRadius = 0.02f;
-        private int _boundryTexture;
         private int _pointCount = 0;
-
-        // private float[,] _boundryTexture = 
 
         public Visualize(int width, int height, string title) : base(GameWindowSettings.Default, new NativeWindowSettings() { ClientSize = new Vector2i(width, height), Title = title })
         {
