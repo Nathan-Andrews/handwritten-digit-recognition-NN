@@ -1,0 +1,79 @@
+# Ignore Visual Studio temporary files, build results, and
+# folder-based project model files.
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+data/
+
+# Visual Studio 2019/2022
+.vs/
+.vscode/
+
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Mono Auto Generated Files
+mono_crash.*
+
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Folder config file
+Desktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+# VS Code directories
+.vscode/
+
+# Windows Installer files
+*.cab
+*.msi
+*.msm
+*.msp
+
+# Windows shortcuts
+*.lnk
+
+# Rider
+.idea/
+*.sln.iml
+
+# JetBrains Rider
+.idea/
+.idea_modules/
+.idea/.idea/
+.idea/.idea_modules/
+.idea/*.iml
+.idea/modules.xml
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/dictionaries
+.idea/libraries
+.idea/.rider/
+.idea/.rider_generated/
+.idea/.idea/
+.idea/.idea_modules/
+
+# Coverlet Coverage Tool
+coverage.opencover.xml
+coverage.cobertura.xml
+
+# Resharper
+_ReSharper.*
+*.[Rr]e[Ss]harper
+*.DotSettings
