@@ -17,6 +17,7 @@ public class Visualize : GameWindow
     private Vector2[] _pointsArray = new Vector2[10];
     private int[] _pointsClasses = new int[10];
     private float _pointRadius = 0.02f;
+    private int _boundryTexture;
 
     // private float[,] _boundryTexture = 
 
@@ -72,6 +73,17 @@ public class Visualize : GameWindow
 
         GL.BindVertexArray(0);
 
+        _boundryTexture = GL.GenTexture();
+        GL.BindTexture(TextureTarget.Texture2D, _boundryTexture);
+        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+
+        // Compute and update texture with decision boundary
+        UpdateDecisionBoundaryTexture();
+
+        // Unbind texture
+        GL.BindTexture(TextureTarget.Texture2D, 0);
+
         _pointsArray[0] = new Vector2(-0.5f, 0.5f);
         _pointsArray[1] = new Vector2(0.5f, 0.5f);
         _pointsArray[2] = new Vector2(0.0f, -0.5f);
@@ -97,6 +109,44 @@ public class Visualize : GameWindow
         }
     }
 
+    private void UpdateDecisionBoundaryTexture()
+    {
+        Vector3 redColor = new(0.98f, 0.6f, 0.592f);
+        Vector3 blueColor = new(0.659f, 0.769f, 0.988f);
+
+        int width = 800;
+        int height = 800;
+        float[] data = new float[width * height * 3];
+
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                float inputX = (float)x / width * 2.0f - 1.0f;
+                float inputY = (float)y / height * 2.0f - 1.0f;
+                int classification = Network.classify(inputX, inputY);
+
+                int index = (y * width + x) * 3;
+                if (classification == 0)
+                {
+                    data[index] = redColor.X;
+                    data[index + 1] = redColor.Y;
+                    data[index + 2] = redColor.Z;
+                }
+                else
+                {
+                    data[index] = blueColor.X;
+                    data[index + 1] = blueColor.Y;
+                    data[index + 2] = blueColor.Z;
+                }
+            }
+        }
+
+        GL.BindTexture(TextureTarget.Texture2D, _boundryTexture);
+        GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgb, width, height, 0, PixelFormat.Rgb, PixelType.Float, data);
+        GL.BindTexture(TextureTarget.Texture2D, 0);
+    }
+
     private void updateUniforms () {
         // Set point uniform variables
         int centerLocation = GL.GetUniformLocation(_pointShaderProgram, "pointCenters");
@@ -119,6 +169,7 @@ public class Visualize : GameWindow
         // Render boundry background
         GL.UseProgram(_boundryShaderProgram);
         GL.BindVertexArray(_boundryVertexArrayObject);
+        GL.BindTexture(TextureTarget.Texture2D,_boundryTexture);
         GL.DrawArrays(PrimitiveType.TriangleStrip, 0, 4);
 
         // Render points on top of the boundry background
@@ -126,7 +177,6 @@ public class Visualize : GameWindow
         GL.BindVertexArray(_pointVertexArrayObject);
 
         updateUniforms();
-
 
         GL.DrawArrays(PrimitiveType.TriangleStrip, 0, 4);
 

@@ -1,10 +1,11 @@
 #version 330 core
-layout(location = 0) in vec3 aPosition;
-out vec3 pixelPosition;
+
+layout(location = 0) in vec3 aPos;
+
+out vec2 TexCoords;
 
 void main()
 {
-    gl_Position = vec4(aPosition, 1.0);
-
-    pixelPosition = aPosition; // Pass the vertex position to the fragment shader
+    gl_Position = vec4(aPos, 1.0);
+    TexCoords = (aPos.xy + vec2(1.0, 1.0)) / 2.0;
 }

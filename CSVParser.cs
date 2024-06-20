@@ -18,12 +18,12 @@ public static class CSVParser {
                     string[]? fields = parser.ReadFields();
                     if (fields == null || fields.Length != (numFeatures + 1)) continue;
 
-                    double[] features = new double[numFeatures];
+                    float[] features = new float[numFeatures];
                     
                     for (int field = 0; field < fields.Length - 1; field++) {
                         Console.WriteLine(fields[field]);
 
-                        features[field] = Convert.ToDouble(fields[field]);
+                        features[field] = Convert.ToSingle(fields[field]);
                     }
                     int label = Convert.ToInt16(fields[numFeatures]);
 
