@@ -3,11 +3,11 @@ using OpenTK.Mathematics;
 
 namespace simple_network {
     public class DataPoint {
-        public float[] feature;
+        public double[] feature;
         public int label;
         public double[] expectedOutput;
 
-        public DataPoint(float[] feature, int label, int numLabels) {
+        public DataPoint(double[] feature, int label, int numLabels) {
             this.feature = feature;
             this.label = label;
 
@@ -15,8 +15,8 @@ namespace simple_network {
             this.expectedOutput[label] = 1;
         }
 
-        private static float transformToCoordinateSpace(float input) {
-            return (input - 0.5f) * 2.0f;
+        private static float transformToCoordinateSpace(double input) {
+            return (float)((input - 0.5) * 2.0);
         }
 
         public Vector2 getPointAsCoordinates() {

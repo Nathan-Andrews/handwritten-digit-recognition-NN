@@ -19,7 +19,7 @@ namespace simple_network {
                     string[]? fields = parser.ReadFields();
                     if (fields == null || fields.Length != (numFeatures + 1)) continue;
 
-                    float[] features = new float[numFeatures];
+                    double[] features = new double[numFeatures];
                     
                     for (int field = 0; field < fields.Length - 1; field++) {
                         features[field] = Convert.ToSingle(fields[field]);

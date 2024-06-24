@@ -1,8 +1,8 @@
 #version 330 core
 in vec2 ourPosition;
 out vec4 FragColor;
-uniform vec2 pointCenters[10];
-uniform int pointClasses[10];
+uniform vec2 pointCenters[100];
+uniform int pointClasses[100];
 uniform float pointRadius;
 uniform int pointCount;
 
@@ -13,7 +13,7 @@ void main()
         float distance = length(ourPosition - pointCenters[i]);
 
         if (distance < pointRadius) {
-            if (pointClasses[i] == 1) {
+            if (pointClasses[i] == 0) {
                 FragColor = vec4(0.337, 0.541, 0.949, 1.0); // blue class
             }
             else {

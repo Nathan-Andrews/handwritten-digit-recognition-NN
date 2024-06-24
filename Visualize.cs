@@ -16,12 +16,12 @@ namespace simple_network {
         private int _boundryTexture;
         private int _pointVertexArrayObject;
         private int _pointVertexBufferObject;
-        private Vector2[] _pointsArray = new Vector2[10];
-        private int[] _pointsClasses = new int[10];
+        private Vector2[] _pointsArray = new Vector2[100];
+        private int[] _pointsClasses = new int[100];
         private float _pointRadius = 0.02f;
         private int _pointCount = 0;
 
-        private Network network = new Network(2,3,2);
+        public Network network = new Network(2,3,2);
 
         public Visualize(int width, int height, string title) : base(GameWindowSettings.Default, new NativeWindowSettings() { ClientSize = new Vector2i(width, height), Title = title })
         {
@@ -93,7 +93,7 @@ namespace simple_network {
         public void AddPoints(HashSet<DataPoint> dataPoints) {
             int i = 0;
             foreach (DataPoint point in dataPoints) {
-                if (i >= 10) break;
+                if (i >= 100) break; // adds max
 
                 _pointsArray[i] = point.getPointAsCoordinates();
     
