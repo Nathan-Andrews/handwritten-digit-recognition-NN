@@ -118,11 +118,11 @@ namespace simple_network {
             {
                 for (int x = 0; x < width; x++)
                 {
-                    // float inputX = (float)x / width * 2.0f - 1.0f;
-                    // float inputY = (float)y / height * 2.0f - 1.0f;
-                    float[] input = new float[2];
-                    input[0] = (float)x / width * 2.0f - 1.0f;
-                    input[1] = (float)y / height * 2.0f - 1.0f;
+                    // double inputX = (double)x / width * 2.0f - 1.0f;
+                    // double inputY = (double)y / height * 2.0f - 1.0f;
+                    double[] input = new double[2];
+                    input[0] = (double)x / width * 2.0f - 1.0f;
+                    input[1] = (double)y / height * 2.0f - 1.0f;
                     int classification = network.Classify(input);
 
                     int index = (y * width + x) * 3;

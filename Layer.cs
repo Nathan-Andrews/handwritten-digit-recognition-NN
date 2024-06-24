@@ -1,22 +1,22 @@
 namespace simple_network {
     public class Layer {
         int numInputs, numOutputs;
-        public float[,] weights;
-        public float[] biases;
+        public double[,] weights;
+        public double[] biases;
 
         public Layer(int numInputs, int numOutputs) {
             this.numInputs = numInputs;
             this.numOutputs = numOutputs;
 
-            weights = new float[numInputs, numOutputs];
-            biases = new float[numOutputs];
+            weights = new double[numInputs, numOutputs];
+            biases = new double[numOutputs];
         }
 
-        public float[] GetLayerOutputs(float[] inputs) {
-            float[] outputs = new float[numOutputs];
+        public double[] GetLayerOutputs(double[] inputs) {
+            double[] outputs = new double[numOutputs];
 
             for (int outputNode = 0; outputNode < numOutputs; outputNode++) {
-                float output = 0;
+                double output = 0;
 
                 for (int inputNode = 0; inputNode < numInputs; inputNode++) {
                     output += inputs[inputNode] * weights[inputNode,outputNode];
