@@ -5,6 +5,7 @@ using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using System;
 using System.IO;
+using System.Threading;
 
 
 namespace simple_network {
@@ -21,7 +22,12 @@ namespace simple_network {
         private float _pointRadius = 0.02f;
         private int _pointCount = 0;
 
-        public Network network = new Network(2,3,2);
+        public Network network = new Network(2,3,3,2);
+        public HashSet<DataPoint>? _dataPoints;
+        private bool _continueTraining = true;
+        private object _lock = new object();
+        private int _epochCounter = 0;
+        private Thread _trainingThread;
 
         public Visualize(int width, int height, string title) : base(GameWindowSettings.Default, new NativeWindowSettings() { ClientSize = new Vector2i(width, height), Title = title })
         {
@@ -88,9 +94,16 @@ namespace simple_network {
 
             // Set clear color
             GL.ClearColor(Color4.CornflowerBlue);
+
+            // Start training thread
+            _trainingThread = new Thread(TrainNeuralNetwork);
+            _trainingThread.Start();
+
         }
 
         public void AddPoints(HashSet<DataPoint> dataPoints) {
+            _dataPoints = dataPoints;
+
             int i = 0;
             foreach (DataPoint point in dataPoints) {
                 if (i >= 100) break; // adds max
@@ -114,29 +127,31 @@ namespace simple_network {
             int height = 800;
             float[] data = new float[width * height * 3];
 
-            for (int y = 0; y < height; y++)
-            {
-                for (int x = 0; x < width; x++)
+            lock (_lock) {
+                for (int y = 0; y < height; y++)
                 {
-                    // double inputX = (double)x / width * 2.0f - 1.0f;
-                    // double inputY = (double)y / height * 2.0f - 1.0f;
-                    double[] input = new double[2];
-                    input[0] = (double)x / width * 2.0f - 1.0f;
-                    input[1] = (double)y / height * 2.0f - 1.0f;
-                    int classification = network.Classify(input);
+                    for (int x = 0; x < width; x++)
+                    {
+                        // double inputX = (double)x / width * 2.0f - 1.0f;
+                        // double inputY = (double)y / height * 2.0f - 1.0f;
+                        double[] input = new double[2];
+                        input[0] = (double)x / width * 2.0f - 1.0f;
+                        input[1] = (double)y / height * 2.0f - 1.0f;
+                        int classification = network.Classify(input);
 
-                    int index = (y * width + x) * 3;
-                    if (classification == 0)
-                    {
-                        data[index] = blueColor.X;
-                        data[index + 1] = blueColor.Y;
-                        data[index + 2] = blueColor.Z;
-                    }
-                    else
-                    {
-                        data[index] = redColor.X;
-                        data[index + 1] = redColor.Y;
-                        data[index + 2] = redColor.Z;
+                        int index = (y * width + x) * 3;
+                        if (classification == 0)
+                        {
+                            data[index] = blueColor.X;
+                            data[index + 1] = blueColor.Y;
+                            data[index + 2] = blueColor.Z;
+                        }
+                        else
+                        {
+                            data[index] = redColor.X;
+                            data[index + 1] = redColor.Y;
+                            data[index + 2] = redColor.Z;
+                        }
                     }
                 }
             }
@@ -168,6 +183,8 @@ namespace simple_network {
             // Clear the screen
             GL.Clear(ClearBufferMask.ColorBufferBit);
 
+            UpdateDecisionBoundaryTexture();
+
             // Render boundry background
             GL.UseProgram(_boundryShaderProgram);
             GL.BindVertexArray(_boundryVertexArrayObject);
@@ -185,6 +202,24 @@ namespace simple_network {
             SwapBuffers();
         }
 
+        private void TrainNeuralNetwork()
+        {
+            while (_continueTraining)
+            {
+                lock (_lock)
+                {
+                    if (_dataPoints != null) network.Fit(_dataPoints,0.1);
+                    _epochCounter++;
+                }
+
+                // Update the decision boundary texture occasionally to reduce CPU usage
+                if (_epochCounter % 10 == 0)
+                {
+                    // UpdateDecisionBoundaryTexture();
+                }
+            }
+        }
+
         protected override void OnResize(ResizeEventArgs e)
         {
             base.OnResize(e);
@@ -194,6 +229,8 @@ namespace simple_network {
         protected override void OnUnload()
         {
             base.OnUnload();
+            _continueTraining = false;
+            _trainingThread.Join();
             GL.DeleteVertexArray(_boundryVertexArrayObject);
             GL.DeleteVertexArray(_pointVertexArrayObject);
             GL.DeleteProgram(_boundryShaderProgram);

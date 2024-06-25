@@ -8,11 +8,11 @@ namespace simple_network {
             
             using (var window = new Visualize(800, 800, "OpenTK Shaders"))
             {
-                Console.WriteLine("Training");
-                for (int i = 0; i < 10000; i++) {
-                    window.network.Fit(dataPoints,0.1);
-                }
-                Console.WriteLine("Finished Training");
+                // Console.WriteLine("Training");
+                // for (int i = 0; i < 10000; i++) {
+                //     window.network.Fit(dataPoints,0.1);
+                // }
+                // Console.WriteLine("Finished Training");
                 window.AddPoints(dataPoints);
                 window.Run();
             }
