@@ -22,7 +22,7 @@ namespace simple_network {
         private float _pointRadius = 0.02f;
         private int _pointCount = 0;
 
-        public Network network = new Network(2,3,3,2);
+        public Network network = new Network(2,3,4,3,2);
         public HashSet<DataPoint>? _dataPoints;
         private bool _continueTraining = true;
         private object _lock = new object();
@@ -127,31 +127,34 @@ namespace simple_network {
             int height = 800;
             float[] data = new float[width * height * 3];
 
-            lock (_lock) {
-                for (int y = 0; y < height; y++)
-                {
-                    for (int x = 0; x < width; x++)
-                    {
-                        // double inputX = (double)x / width * 2.0f - 1.0f;
-                        // double inputY = (double)y / height * 2.0f - 1.0f;
-                        double[] input = new double[2];
-                        input[0] = (double)x / width * 2.0f - 1.0f;
-                        input[1] = (double)y / height * 2.0f - 1.0f;
-                        int classification = network.Classify(input);
+            Network networkCopy;
 
-                        int index = (y * width + x) * 3;
-                        if (classification == 0)
-                        {
-                            data[index] = blueColor.X;
-                            data[index + 1] = blueColor.Y;
-                            data[index + 2] = blueColor.Z;
-                        }
-                        else
-                        {
-                            data[index] = redColor.X;
-                            data[index + 1] = redColor.Y;
-                            data[index + 2] = redColor.Z;
-                        }
+            lock (_lock) {
+                networkCopy = new Network(network);
+            }
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    // double inputX = (double)x / width * 2.0f - 1.0f;
+                    // double inputY = (double)y / height * 2.0f - 1.0f;
+                    double[] input = new double[2];
+                    input[0] = (double)x / width * 2.0f - 1.0f;
+                    input[1] = (double)y / height * 2.0f - 1.0f;
+                    int classification = networkCopy.Classify(input);
+
+                    int index = (y * width + x) * 3;
+                    if (classification == 0)
+                    {
+                        data[index] = blueColor.X;
+                        data[index + 1] = blueColor.Y;
+                        data[index + 2] = blueColor.Z;
+                    }
+                    else
+                    {
+                        data[index] = redColor.X;
+                        data[index + 1] = redColor.Y;
+                        data[index + 2] = redColor.Z;
                     }
                 }
             }
@@ -213,10 +216,10 @@ namespace simple_network {
                 }
 
                 // Update the decision boundary texture occasionally to reduce CPU usage
-                if (_epochCounter % 10 == 0)
-                {
-                    // UpdateDecisionBoundaryTexture();
-                }
+                // if (_epochCounter % 10 == 0)
+                // {
+                //     UpdateDecisionBoundaryTexture();
+                // }
             }
         }
 

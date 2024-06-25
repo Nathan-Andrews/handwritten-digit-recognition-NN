@@ -2,17 +2,17 @@ using OpenTK.Mathematics;
 
 
 namespace simple_network {
-    public class DataPoint {
-        public double[] feature;
-        public int label;
-        public double[] expectedOutput;
+    public struct DataPoint {
+        public readonly double[] feature;
+        public readonly int label;
+        public readonly double[] expectedOutput;
 
         public DataPoint(double[] feature, int label, int numLabels) {
             this.feature = feature;
             this.label = label;
 
             this.expectedOutput = new double[numLabels];
-            this.expectedOutput[label] = 1;
+            this.expectedOutput[label] = 1.0;
         }
 
         private static float transformToCoordinateSpace(double input) {
