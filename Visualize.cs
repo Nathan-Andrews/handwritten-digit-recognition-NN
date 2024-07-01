@@ -127,11 +127,11 @@ namespace simple_network {
             int height = 800;
             float[] data = new float[width * height * 3];
 
-            Network networkCopy;
+            // Network networkCopy;
 
-            lock (_lock) {
-                networkCopy = new Network(network);
-            }
+            // lock (_lock) {
+            //     networkCopy = new Network(network);
+            // }
             for (int y = 0; y < height; y++)
             {
                 for (int x = 0; x < width; x++)
@@ -141,7 +141,7 @@ namespace simple_network {
                     double[] input = new double[2];
                     input[0] = (double)x / width;
                     input[1] = (double)y / height;
-                    int classification = networkCopy.Classify(input);
+                    int classification = network.Classify(input);
 
                     int index = (y * width + x) * 3;
                     if (classification == 0)
@@ -209,7 +209,7 @@ namespace simple_network {
         {
             while (_continueTraining)
             {
-                lock (_lock)
+                // lock (_lock)
                 {
                     if (_dataPoints != null) network.Fit(_dataPoints,0.1);
                     _epochCounter++;
