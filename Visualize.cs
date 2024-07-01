@@ -22,7 +22,7 @@ namespace simple_network {
         private float _pointRadius = 0.02f;
         private int _pointCount = 0;
 
-        public Network network = new Network(2,3,4,3,2);
+        public Network network = new Network(2,3,2);
         public HashSet<DataPoint>? _dataPoints;
         private bool _continueTraining = true;
         private object _lock = new object();
@@ -139,8 +139,8 @@ namespace simple_network {
                     // double inputX = (double)x / width * 2.0f - 1.0f;
                     // double inputY = (double)y / height * 2.0f - 1.0f;
                     double[] input = new double[2];
-                    input[0] = (double)x / width * 2.0f - 1.0f;
-                    input[1] = (double)y / height * 2.0f - 1.0f;
+                    input[0] = (double)x / width;
+                    input[1] = (double)y / height;
                     int classification = networkCopy.Classify(input);
 
                     int index = (y * width + x) * 3;
