@@ -31,6 +31,7 @@ namespace simple_network {
 
         public Visualize(int width, int height, string title) : base(GameWindowSettings.Default, new NativeWindowSettings() { ClientSize = new Vector2i(width, height), Title = title })
         {
+            _trainingThread = new Thread(TrainNeuralNetwork);
         }
 
         protected override void OnLoad()
@@ -96,7 +97,6 @@ namespace simple_network {
             GL.ClearColor(Color4.CornflowerBlue);
 
             // Start training thread
-            _trainingThread = new Thread(TrainNeuralNetwork);
             _trainingThread.Start();
 
         }

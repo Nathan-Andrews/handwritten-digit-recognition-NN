@@ -1,4 +1,6 @@
 
+using System.Runtime.CompilerServices;
+
 namespace simple_network {
 
     public class Network {
@@ -14,7 +16,7 @@ namespace simple_network {
             }
         }
 
-        public Network(Network old) { // copy constructor
+        public Network(Network old) { // copy constructor (needs work)
             layers = new Layer[old.layers.Count()];
             old.layers.CopyTo(layers, 0);
             batchSize = old.batchSize;
@@ -33,18 +35,16 @@ namespace simple_network {
             return batch;
         }
         
-        public static int PickClass(double[] inputs) { // returns the class with the highest weight 
+        // for classifcation
+        // returns the class with the highest weightedInput
+        // is run by Classify(...) to determine the class of a data point
+        //  after that point has been run through the network
+        public static int PickClass(double[] weightedInputs) {
             int maxIndex = 0;
-            for (int i = 1; i < inputs.Length; i++) {
-                if (inputs[i] > inputs[maxIndex]) maxIndex = i;
+            for (int i = 1; i < weightedInputs.Length; i++) {
+                if (weightedInputs[i] > weightedInputs[maxIndex]) maxIndex = i;
             }
             return maxIndex;
-        }
-
-        public static double ActivationFunction(double input) {
-            // sigmoid activation function
-            // 1 / (1 + e^-x)
-            return 1 / (1 + Math.Exp(-input));
         }
 
         double[] GetOutputs(double[] inputs) {
@@ -55,19 +55,33 @@ namespace simple_network {
             return inputs;
         }
 
+        void FowardPass(double[] inputs) { // updates the internal values for the funcitons
+            foreach (Layer layer in layers) {
+                inputs = layer.PerformLayerPass(inputs);
+            }
+        }
+
+        // used in gradient descent
+        // cost function for a single point
+        // used in big Cost(...) which adds this output to the sum of the cost of all points
+        // determines if a change to the weights causes the network to classify this point better or worse
         double Cost(DataPoint point) { // loss function for a single datapoint
-            double[] weightedOutputs = GetOutputs(point.feature);
+            double[] networkOutputs = GetOutputs(point.feature);
             Layer outputLayer = layers[layers.Length - 1]; // the last layer
             double cost = 0;
 
-            for (int i = 0; i < weightedOutputs.Length; i++) {
-                cost += outputLayer.NodeCost(weightedOutputs[i],point.expectedOutput[i]); // add up the cost of each node in the output layer
+            for (int i = 0; i < networkOutputs.Length; i++) {
+                cost += outputLayer.NodeCost(networkOutputs[i],point.expectedOutput[i]); // add up the cost of each node in the output layer
             }
 
             return cost;
         }
 
-        double Cost(HashSet<DataPoint> points) { // average loss of multiple datapoints
+        // used in gradient descent
+        // cost function for the whole network
+        // sum of the cost of each dataPoint being considered
+        // used to determine whether a small change to the network is positive or negative
+        double Cost(HashSet<DataPoint> points) {
             double cost = 0;
 
             foreach (DataPoint point in points) {
@@ -77,48 +91,82 @@ namespace simple_network {
             return cost / points.Count; // divide by the number of points to get the average
         }
 
+        // used in training
+        // performs one epoch of training on the network
+        // called in a loop outside of the network
+        // uses backprogagation gradient descent to train the network
+        // uses a random mini-batch subset so that not every point is considered each epoch
+        // works by using the derivatives to find the slop of the cost landscape at a certain point
+        //  which is the gradient at that point
+        //  after considering each layer, the gradients are used to apply changes
+        //  to the network
         public void Fit(HashSet<DataPoint> points, double learningRate) {
             HashSet<DataPoint> trainingData = SelectMinibatch(points);
+            // HashSet<DataPoint> trainingData = points;
 
-            double h = 0.0001; // amount to jiggle the weights/biases
-            double originalCost = Cost(trainingData); // find the initial cost with the previous weights
+            ResetGradients();
 
-            foreach (Layer layer in layers) {
-
-                // calculate the cost gradient for the weights
-                for (int outputNode = 0; outputNode < layer.numOutputs; outputNode++) {
-                    for (int inputNode = 0; inputNode < layer.numInputs; inputNode++) {
-                        layer.weights[inputNode,outputNode] += h; // jiggle the weight
-                        double deltaCost = Cost(trainingData) - originalCost; // the change in cost // will be negative if the change is adventagious
-                        layer.weights[inputNode,outputNode] -= h; // revert the jiggle so that the other node calculations aren't affected
-                        layer.costGradientWeight[inputNode,outputNode] = deltaCost / h; 
-                    }
-                }
-
-                // calculate the cost gradient for the biases
-                for (int biasIndex = 0; biasIndex < layer.biases.Length; biasIndex++) {
-                    layer.biases[biasIndex] += h; // jiggle the bias
-                    double deltaCost = Cost(trainingData) - originalCost; // the change in cost // will be negative if the change is adventagious
-                    layer.biases[biasIndex] -= h; // revert the jiggle so that the other node calculations aren't affected
-                    layer.costGradientBias[biasIndex] = deltaCost / h; 
-                }
+            foreach (DataPoint point in trainingData) {
+                Backpropagate(point);
             }
 
+            // ApplyAllGradients(learningRate / batchSize);
             ApplyAllGradients(learningRate);
 
             Console.WriteLine("Cost: " + Cost(trainingData)); // comment out when actually training because this slows it down
         }
 
+        // for gradient descent
+        // used in Fit(...)
+        // updates the weights and biases using the calculated gradients for each layer
         private void ApplyAllGradients(double learningRate) {
             foreach (Layer layer in layers) {
                 layer.ApplyGradients(learningRate);
             }
         }
 
-        public int Classify(double[] inputs) {
-            double[] outputs = GetOutputs(inputs);
+        // used in training
+        // backpropagation for a certian point
+        // used in Fit(...) to run each point through the network
+        // goes backwards through the network to update the gradients for each layer
+        // the goal is to find how each weight and bias effects the cost
+        // each layer uses the node values of the layer before it, which is why it needs to go backwards
+        private void Backpropagate(DataPoint point) {
+            // runs the point through the layers so that they store relevent values like the input and activations
+            FowardPass(point.feature);
 
-            return PickClass(outputs);
+            Layer outputLayer = layers[layers.Length - 1];
+            double[] nodeValues = outputLayer.CalculateOutputLayerNodeValues(point.expectedOutput);
+            outputLayer.UpdateGradients(nodeValues);
+
+            for (int layerIndex = layers.Length - 2; layerIndex >= 0; layerIndex--) { // loop backwards through the layers
+                Layer hiddenLayer = layers[layerIndex];
+                nodeValues = hiddenLayer.CalculateHiddenLayerNodeValues(layers[layerIndex + 1],nodeValues);
+                hiddenLayer.UpdateGradients(nodeValues);
+            }
+        }
+
+        // for training
+        // resets the gradients for each layer to 0
+        // used in Fit(...) to reset the gradients before each epoch
+        private void ResetGradients() {
+            foreach (Layer layer in layers) {
+                for (int outputNode = 0; outputNode < layer.numOutputs; outputNode++) {
+                    for (int inputNode = 0; inputNode < layer.numInputs; inputNode++) {
+                        layer.costGradientWeight[inputNode,outputNode] = 0.0;
+                    }
+                    layer.costGradientBias[outputNode] = 0.0;
+                }
+            }
+        }
+
+        // for classification
+        // runs a multi-dimensional point through the network to determine the output
+        // used when determining the class of a point, such as when visualizing the texture
+        public int Classify(double[] inputs) {
+            double[] weightedInputs = GetOutputs(inputs);
+
+            return PickClass(weightedInputs);
         }
     }
 }
