@@ -12,7 +12,7 @@ namespace simple_network {
 
             Parallel.For(0,imageCount, (i) => {
                 images[i] = GenerateImage(imagesReader.GetByteRange(offset + (i * imageSize), imageSize),imageSize);
-                images[i].digit = labelsReader.GetByteRangeInt(offset + i, 1);
+                images[i].digit = labelsReader.GetByteRangeInt(offset - 8 + i, 1);
             });
 
             return images;
