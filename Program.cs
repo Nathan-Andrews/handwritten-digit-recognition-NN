@@ -19,7 +19,7 @@ namespace simple_network {
         public static void Main(String[] args) {
             // Run2dDataSetVisualization();
 
-            ImageSet set = new(10);
+            ImageSet set = new(20);
 
             using (var window = new ImageVisualizer(800, 800, "Digit Visualization",set)) {
                 window.Run();

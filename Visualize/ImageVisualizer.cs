@@ -13,11 +13,13 @@ namespace simple_network {
         private ImageSet _imageSet;
 
         private int _renderedDigitIndex = 0;
+        private Image _currentDigit;
 
 
         public ImageVisualizer(int width, int height, string title, ImageSet imageSet) : base(GameWindowSettings.Default, new NativeWindowSettings() { ClientSize = new Vector2i(width, height), Title = title })
         {
             this._imageSet = imageSet;
+            this._currentDigit = imageSet.images[_renderedDigitIndex];
         }
 
         protected override void OnLoad() {
@@ -73,7 +75,7 @@ namespace simple_network {
         private void UpdateUniforms () {
             float[] pixels = new float[784]; 
             for (int i = 0; i < 784; i++) {
-                pixels[i] = (float)_imageSet.images[_renderedDigitIndex].pixels[i];
+                pixels[i] = (float)_currentDigit.pixels[i];
             }
 
             int pixelsLocation = GL.GetUniformLocation(_shaderProgram,"pixels");
@@ -101,11 +103,16 @@ namespace simple_network {
             else
             {
                 // Console.WriteLine($"Key Down: {e.Key}");
-                if (e.Key == Keys.Space) {
+                if (e.Key == Keys.Enter) {
                     _renderedDigitIndex++;
                     if(_renderedDigitIndex >= _imageSet.images.Length - 1) {
                         Close();
                     }
+
+                    _currentDigit = _imageSet.images[_renderedDigitIndex];
+                }
+                if (e.Key == Keys.Space) {
+                    _currentDigit = ImageProcessor.RandomizeImage(_imageSet.images[_renderedDigitIndex]);
                 }
             }
         }
