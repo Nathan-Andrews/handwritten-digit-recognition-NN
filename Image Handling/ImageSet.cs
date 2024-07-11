@@ -28,7 +28,7 @@ namespace simple_network {
 
             for (int i = 0; i < images.Length; i++) {
                 Image image = ImageProcessor.RandomizeImage(images[i]);
-                dataPoints.Add(new DataPoint(image.pixels,image.digit,image.size));
+                dataPoints.Add(new DataPoint(image.pixels,image.digit,10));
             }
 
             // foreach (Image image in images) {

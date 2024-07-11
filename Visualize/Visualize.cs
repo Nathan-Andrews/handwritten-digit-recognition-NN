@@ -39,8 +39,8 @@ namespace simple_network {
             base.OnLoad();
 
             // Load and compile shaders
-            _boundryShaderProgram = CreateShaderProgram("boundry_vertex_shader.glsl", "boundry_fragment_shader.glsl");
-            _pointShaderProgram = CreateShaderProgram("point_vertex_shader.glsl", "point_fragment_shader.glsl");
+            _boundryShaderProgram = CreateShaderProgram("Visualize/boundry_vertex_shader.glsl", "Visualize/boundry_fragment_shader.glsl");
+            _pointShaderProgram = CreateShaderProgram("Visualize/point_vertex_shader.glsl", "Visualize/point_fragment_shader.glsl");
 
             // Set up boundry vertex data (covering the entire screen)
             float[] boundryVertices = {
