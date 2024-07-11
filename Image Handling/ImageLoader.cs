@@ -10,10 +10,10 @@ namespace simple_network {
 
             int offset = 16;
 
-            for (int i = 0; i < imageCount; i++) { // could be improved with a Parallel.For
+            Parallel.For(0,imageCount, (i) => {
                 images[i] = GenerateImage(imagesReader.GetByteRange(offset + (i * imageSize), imageSize),imageSize);
                 images[i].digit = labelsReader.GetByteRangeInt(offset + i, 1);
-            }
+            });
 
             return images;
         }
@@ -21,9 +21,9 @@ namespace simple_network {
         private static Image GenerateImage(byte[] bytes, int size) {
             double[] pixels = new double[size];
 
-            for (int i = 0; i < size; i++) { // could be improved with a Parallel.For
+            Parallel.For(0,size, (i) => {
                 pixels[i] = bytes[i] / 255.0;
-            }
+            });
 
             return new Image(size,pixels);
         }

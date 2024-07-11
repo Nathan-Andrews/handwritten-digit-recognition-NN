@@ -74,9 +74,9 @@ namespace simple_network {
 
         private void UpdateUniforms () {
             float[] pixels = new float[784]; 
-            for (int i = 0; i < 784; i++) {
+            Parallel.For(0,784, (i) => {
                 pixels[i] = (float)_currentDigit.pixels[i];
-            }
+            });
 
             int pixelsLocation = GL.GetUniformLocation(_shaderProgram,"pixels");
             GL.Uniform1(pixelsLocation,pixels.Length,pixels);
@@ -110,6 +110,8 @@ namespace simple_network {
                     }
 
                     _currentDigit = _imageSet.images[_renderedDigitIndex];
+
+                    Console.WriteLine(_currentDigit.digit);
                 }
                 if (e.Key == Keys.Space) {
                     _currentDigit = ImageProcessor.RandomizeImage(_imageSet.images[_renderedDigitIndex]);
