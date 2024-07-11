@@ -5,6 +5,8 @@ namespace simple_network {
         // public static 
         public Image[] images;
 
+        public HashSet<DataPoint> dataPoints;
+
         public int setSize; // number of images in the set
 
         public Tuple<int, int> imageDimensions;
@@ -21,6 +23,13 @@ namespace simple_network {
             imageDimensions = imagesReader.GetDimensions();
 
             images = ImageLoader.GetImageSet(imagesReader,labelsReader,setSize);
+
+            dataPoints = new HashSet<DataPoint>();
+
+            for (int i = 0; i < images.Length; i++) {
+                Image image = ImageProcessor.RandomizeImage(images[i]);
+                dataPoints.Add(new DataPoint(image.pixels,image.digit,image.size));
+            }
 
             // foreach (Image image in images) {
             //     image.PrintImageAsAsciiArt();

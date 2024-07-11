@@ -21,8 +21,21 @@ namespace simple_network {
 
             ImageSet set = new(20);
 
-            using (var window = new ImageVisualizer(800, 800, "Digit Visualization",set)) {
-                window.Run();
+            // HashSet<DataPoint> dataPoints = CSVParser.Parse("/Users/nathanandrews/Desktop/c#_projects/neural_network/untrained-simple-network/data//data.csv",2,2);
+
+
+            // using (var window = new ImageVisualizer(800, 800, "Digit Visualization",set)) {
+            //     window.Run();
+            // }
+
+            Network network = new(784,1000,10);
+            // Network network = new(2,3,2);
+
+            // while (true) {
+            //     network.Fit(dataPoints,0.1);
+            // }
+            while (true) {
+                network.Fit(set.dataPoints,0.1);
             }
         }
     }
