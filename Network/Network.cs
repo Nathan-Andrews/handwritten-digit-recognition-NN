@@ -6,6 +6,7 @@ namespace simple_network {
     public class Network {
         Layer[] layers;
         readonly int batchSize = 16; // the size of the minibatch used when calculating the cost
+        NetworkData[] batchNetworkData;
 
         public Network(params int[] layerSizes) {
             layers = new Layer[layerSizes.Length - 1];
@@ -13,12 +14,16 @@ namespace simple_network {
             for (int i = 0; i < layers.Length; i++) {
                 layers[i] = new Layer(layerSizes[i],layerSizes[i+1]);
             }
+
+            batchNetworkData = new NetworkData[batchSize];
         }
 
         public Network(Network old) { // copy constructor (needs work)
             layers = new Layer[old.layers.Count()];
             old.layers.CopyTo(layers, 0);
             batchSize = old.batchSize;
+
+            batchNetworkData = new NetworkData[batchSize];
         }
 
         
@@ -42,9 +47,9 @@ namespace simple_network {
             return inputs;
         }
 
-        void FowardPass(double[] inputs) { // updates the internal values for the funcitons
-            foreach (Layer layer in layers) {
-                inputs = layer.PerformLayerPass(inputs);
+        void FowardPass(double[] inputs, NetworkData networkData) { // updates the internal values for the funcitons
+            for (int i = 0; i < layers.Length; i++) {
+                inputs = layers[i].PerformLayerPass(inputs,networkData.layerData[i]);
             }
         }
 
@@ -92,9 +97,15 @@ namespace simple_network {
 
             ResetGradients();
 
-            for (int i = 0; i < trainingData.size; i++) {
-                Backpropagate(trainingData.GetElement(i));
-            }
+
+			for (int i = 0; i < batchSize; i++)
+			{
+				batchNetworkData[i] = new NetworkData(layers);
+			}
+
+            Parallel.For(0, trainingData.size, (i) => {
+                Backpropagate(trainingData.GetElement(i),batchNetworkData[i]);
+            });
 
             // ApplyAllGradients(learningRate / batchSize);
             ApplyAllGradients(learningRate);
@@ -117,18 +128,18 @@ namespace simple_network {
         // goes backwards through the network to update the gradients for each layer
         // the goal is to find how each weight and bias effects the cost
         // each layer uses the node values of the layer before it, which is why it needs to go backwards
-        private void Backpropagate(DataPoint point) {
+        private void Backpropagate(DataPoint point, NetworkData pointNetworkData) {
             // runs the point through the layers so that they store relevent values like the input and activations
-            FowardPass(point.feature);
+            FowardPass(point.feature,pointNetworkData);
 
-            Layer outputLayer = layers[layers.Length - 1];
-            double[] nodeValues = outputLayer.CalculateOutputLayerNodeValues(point.expectedOutput);
-            outputLayer.UpdateGradients(nodeValues);
+            Layer outputLayer = layers[^1];
+            double[] nodeValues = outputLayer.CalculateOutputLayerNodeValues(point.expectedOutput,pointNetworkData.layerData[^1]);
+            outputLayer.UpdateGradients(nodeValues,pointNetworkData.layerData[^1]);
 
             for (int layerIndex = layers.Length - 2; layerIndex >= 0; layerIndex--) { // loop backwards through the layers
                 Layer hiddenLayer = layers[layerIndex];
-                nodeValues = hiddenLayer.CalculateHiddenLayerNodeValues(layers[layerIndex + 1],nodeValues);
-                hiddenLayer.UpdateGradients(nodeValues);
+                nodeValues = hiddenLayer.CalculateHiddenLayerNodeValues(layers[layerIndex + 1],pointNetworkData.layerData[layerIndex],nodeValues);
+                hiddenLayer.UpdateGradients(nodeValues,pointNetworkData.layerData[layerIndex]);
             }
         }
 

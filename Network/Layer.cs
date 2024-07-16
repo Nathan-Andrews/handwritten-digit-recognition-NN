@@ -6,9 +6,9 @@ namespace simple_network {
         public double[,] costGradientWeight;
         public double[] costGradientBias;
 
-        public double[] inputs;
-        public double[] weightedInputs;
-        public double[] activationValues;
+        // public double[] inputs;
+        // public double[] weightedInputs;
+        // public double[] activationValues;
 
         public Layer(int numInputs, int numOutputs) {
             this.numInputs = numInputs;
@@ -20,9 +20,9 @@ namespace simple_network {
             costGradientWeight = new double[numInputs, numOutputs];
             costGradientBias = new double[numOutputs];
 
-            weightedInputs = new double[numOutputs];
-            inputs = new double[numInputs];
-            activationValues = new double[numOutputs];
+            // weightedInputs = new double[numOutputs];
+            // inputs = new double[numInputs];
+            // activationValues = new double[numOutputs];
 
             // initialize random weights
             {
@@ -98,9 +98,9 @@ namespace simple_network {
             return activations;
         }
 
-        public double[] PerformLayerPass(double[] inputs) {
-            activationValues = new double[numOutputs];
-            this.inputs = inputs;
+        public double[] PerformLayerPass(double[] inputs, LayerData layerData) {
+            layerData.activationValues = new double[numOutputs];
+            layerData.inputs = inputs;
 
             for (int outputNode = 0; outputNode < numOutputs; outputNode++) {
                 double output = 0;
@@ -111,11 +111,11 @@ namespace simple_network {
 
                 output += biases[outputNode];
 
-                weightedInputs[outputNode] = output;
-                activationValues[outputNode] = ActivationFunction(output);
+                layerData.weightedInputs[outputNode] = output;
+                layerData.activationValues[outputNode] = ActivationFunction(output);
             }
 
-            return activationValues;
+            return layerData.activationValues;
         }
 
 
@@ -136,13 +136,20 @@ namespace simple_network {
         // used in backpropagation
         // updates the values of the gradients for the current layer based on the node values for the layer
         // run by Backpropagate(...)
-        public void UpdateGradients(double[] nodeValues) {
-            for (int outputNode = 0; outputNode < numOutputs; outputNode++) {
-                for (int inputNode = 0; inputNode < numInputs; inputNode++) {
-                    // adds the cost / weight partial derivative to the weight cost gradient for that connection
-                    costGradientWeight[inputNode,outputNode] += nodeValues[outputNode] * inputs[inputNode];
+        public void UpdateGradients(double[] nodeValues, LayerData layerData) {
+            lock (costGradientWeight) {
+                for (int outputNode = 0; outputNode < numOutputs; outputNode++) {
+                    for (int inputNode = 0; inputNode < numInputs; inputNode++) {
+                        // adds the cost / weight partial derivative to the weight cost gradient for that connection
+                        costGradientWeight[inputNode,outputNode] += nodeValues[outputNode] * layerData.inputs[inputNode];
+                    }
+                    costGradientBias[outputNode] += nodeValues[outputNode];
                 }
-                costGradientBias[outputNode] += nodeValues[outputNode];
+            }
+            lock (costGradientBias) {
+                for (int outputNode = 0; outputNode < numOutputs; outputNode++) {
+                    costGradientBias[outputNode] += nodeValues[outputNode];
+                }
             }
         } 
 
@@ -151,12 +158,12 @@ namespace simple_network {
         // run by Backpropagate(...)
         // the partial derivative of the cost, with respect to the activation of the output
         // times the partial derivative of the activation with respect to the weight
-        public double[] CalculateOutputLayerNodeValues(double[] expectedValues) {
+        public double[] CalculateOutputLayerNodeValues(double[] expectedValues, LayerData layerData) {
             double[] nodeValues = new double[expectedValues.Length];
 
             for (int i = 0; i < expectedValues.Length; i++) {
-                double nodeCostDerivative = NodeCostDerivative(activationValues[i],expectedValues[i]);
-                double activationDerivative = ActivationDerivative(weightedInputs[i]);
+                double nodeCostDerivative = NodeCostDerivative(layerData.activationValues[i],expectedValues[i]);
+                double activationDerivative = ActivationDerivative(layerData.weightedInputs[i]);
 
                 nodeValues[i] = activationDerivative * nodeCostDerivative;
             }
@@ -167,7 +174,7 @@ namespace simple_network {
         // used in backpropagation
         // node values of the hidden layers
         // uses the node values of the layer before it
-        public double[] CalculateHiddenLayerNodeValues(Layer oldLayer, double[] oldNodeValues) {
+        public double[] CalculateHiddenLayerNodeValues(Layer oldLayer, LayerData layerData, double[] oldNodeValues) {
             double [] nodeValues = new double[numOutputs];
 
             for (int newNode = 0; newNode < numOutputs; newNode++) {
@@ -178,7 +185,7 @@ namespace simple_network {
                     nodeValue += weightedInputDerivative * oldNodeValues[oldNode];
                 }
                 // Console.WriteLine(inputs.Length + " " + newNode);
-                nodeValue *= ActivationDerivative(weightedInputs[newNode]);
+                nodeValue *= ActivationDerivative(layerData.weightedInputs[newNode]);
                 nodeValues[newNode] = nodeValue;
             }
 
