@@ -99,7 +99,7 @@ namespace simple_network {
             // ApplyAllGradients(learningRate / batchSize);
             ApplyAllGradients(learningRate);
 
-            Console.WriteLine("Cost: " + Cost(trainingData)); // comment out when actually training because this slows it down
+            // Console.WriteLine("Cost: " + Cost(trainingData)); // comment out when actually training because this slows it down
         }
 
         // for gradient descent
@@ -153,6 +153,21 @@ namespace simple_network {
             double[] weightedInputs = GetOutputs(inputs);
 
             return PickClass(weightedInputs);
+        }
+
+        public double GetAccuracy(DataSet points) {
+            int amountCorrect = 0;
+            object _lock = new();
+
+            Parallel.For(0, points.size, (i) => {
+                int result = Classify(points.GetElement(i).feature);
+
+                lock (_lock) {
+                    if (result == points.GetElement(i).label) amountCorrect++;
+                }
+            });
+
+            return ((double) amountCorrect) / points.size;
         }
     }
 }

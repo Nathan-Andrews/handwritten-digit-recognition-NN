@@ -11,9 +11,9 @@ namespace simple_network {
 
         public Tuple<int, int> imageDimensions;
 
-        public ImageSet(int size = -1) {
-            IDXReader imagesReader = new("/Users/nathanandrews/Desktop/c#_projects/neural_network/untrained-simple-network/data/MNIST_ORG/t10k-images.idx3-ubyte");
-            IDXReader labelsReader = new("/Users/nathanandrews/Desktop/c#_projects/neural_network/untrained-simple-network/data/MNIST_ORG/t10k-labels.idx1-ubyte");
+        public ImageSet(int size = -1,string path = "/Users/nathanandrews/Desktop/c#_projects/neural_network/untrained-simple-network/data/MNIST_ORG/t10k") {
+            IDXReader imagesReader = new($"{path}-images.idx3-ubyte");
+            IDXReader labelsReader = new($"{path}-labels.idx1-ubyte");
 
             Debug.Assert(imagesReader.GetImageCount() == labelsReader.GetImageCount(),$"the number of images and labels in the dataset should match, but ({imagesReader.GetImageCount()},{labelsReader.GetImageCount()})");
 
