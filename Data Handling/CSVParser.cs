@@ -4,9 +4,9 @@ using Microsoft.VisualBasic.FileIO;
 
 namespace simple_network {
     public static class CSVParser {
-        public static HashSet<DataPoint> Parse(string path, int numFeatures, int numLabels) {
+        public static DataSet Parse(string path, int numFeatures, int numLabels) {
             Console.WriteLine("Parsing");
-            HashSet<DataPoint> dataPoints = new HashSet<DataPoint>();
+            DataSet dataPoints = new();
 
             using (TextFieldParser parser = new TextFieldParser(path))
             {   

@@ -23,7 +23,7 @@ namespace simple_network {
         private int _pointCount = 0;
 
         public Network network = new Network(2,3,2);
-        public HashSet<DataPoint>? _dataPoints;
+        public DataSet? _dataPoints;
         private bool _continueTraining = true;
         private object _lock = new object();
         private int _epochCounter = 0;
@@ -101,21 +101,18 @@ namespace simple_network {
 
         }
 
-        public void AddPoints(HashSet<DataPoint> dataPoints) {
+        public void AddPoints(DataSet dataPoints) {
             _dataPoints = dataPoints;
 
-            int i = 0;
-            foreach (DataPoint point in dataPoints) {
+            for (int i = 0; i < dataPoints.size; i++) {
                 if (i >= 100) break; // adds max
 
-                _pointsArray[i] = point.getPointAsCoordinates();
+                _pointsArray[i] = dataPoints.GetElement(i).GetPointAsCoordinates();
     
-                _pointsClasses[i] = point.label;
-
-                i++;
+                _pointsClasses[i] = dataPoints.GetElement(i).label;
             }
 
-            _pointCount = i;
+            _pointCount = dataPoints.size;
         }
 
         private void UpdateDecisionBoundaryTexture()

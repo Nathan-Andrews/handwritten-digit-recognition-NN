@@ -78,8 +78,8 @@ namespace simple_network {
             int xBase = (int) Math.Floor(xTransformed);
             int yBase = (int) Math.Floor(yTransformed);
 
-            double xFractional = xTransformed / xBase;
-            double yFractional = yTransformed / yBase;
+            double xFractional = xTransformed - xBase;
+            double yFractional = yTransformed - yBase;
             
             if (image.PointInsideImage(xBase,yBase) && image.PointInsideImage(xBase + 1,yBase + 1)) {
                 // pick the four closest points to interpolate
@@ -93,6 +93,8 @@ namespace simple_network {
                 double topInterpolation = surroundingPixels.Item1 * (1 - xFractional) + surroundingPixels.Item2 * xFractional;
                 double bottomInterpolation = surroundingPixels.Item3 * (1 - xFractional) + surroundingPixels.Item4 * xFractional;
                 pixel = topInterpolation * (1 - yFractional) + bottomInterpolation * yFractional;
+
+                if (double.IsNaN(pixel)) pixel = 0.0;
             }
 
             return pixel;

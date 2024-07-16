@@ -5,8 +5,7 @@ namespace simple_network {
 
     public class Network {
         Layer[] layers;
-        readonly int batchSize = 8; // the size of the minibatch used when calculating the cost
-        Random random= new Random();
+        readonly int batchSize = 16; // the size of the minibatch used when calculating the cost
 
         public Network(params int[] layerSizes) {
             layers = new Layer[layerSizes.Length - 1];
@@ -22,18 +21,6 @@ namespace simple_network {
             batchSize = old.batchSize;
         }
 
-        // for minibatch gradient descent
-        // selects a subset of the data to be considered in training
-        // this speeds up training because the cost function has less points to loop through
-        // it can also help the network escape settle points in the cost landscape
-        // a new batch is choosen each epoch so that all data is considered
-        private HashSet<DataPoint> SelectMinibatch(HashSet<DataPoint> points) {
-            HashSet<DataPoint> batch = new HashSet<DataPoint>();
-            while (batch.Count <= batchSize) {
-                batch.Add(points.ToArray()[random.Next(points.Count)]); //    node: should make more memory efficient later
-            }
-            return batch;
-        }
         
         // for classifcation
         // returns the class with the highest weightedInput
@@ -81,14 +68,14 @@ namespace simple_network {
         // cost function for the whole network
         // sum of the cost of each dataPoint being considered
         // used to determine whether a small change to the network is positive or negative
-        double Cost(HashSet<DataPoint> points) {
+        double Cost(DataSet points) {
             double cost = 0;
 
-            foreach (DataPoint point in points) {
-                cost += Cost(point);
+            for(int i = 0; i < points.size; i++) {
+                cost += Cost(points.GetElement(i));
             }
 
-            return cost / points.Count; // divide by the number of points to get the average
+            return cost / points.size; // divide by the number of points to get the average
         }
 
         // used in training
@@ -100,14 +87,13 @@ namespace simple_network {
         //  which is the gradient at that point
         //  after considering each layer, the gradients are used to apply changes
         //  to the network
-        public void Fit(HashSet<DataPoint> points, double learningRate) {
-            HashSet<DataPoint> trainingData = SelectMinibatch(points);
-            // HashSet<DataPoint> trainingData = points;
+        public void Fit(DataSet points, double learningRate) {
+            DataSet trainingData = points.SelectMinibatch(batchSize);
 
             ResetGradients();
 
-            foreach (DataPoint point in trainingData) {
-                Backpropagate(point);
+            for (int i = 0; i < trainingData.size; i++) {
+                Backpropagate(trainingData.GetElement(i));
             }
 
             // ApplyAllGradients(learningRate / batchSize);

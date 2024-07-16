@@ -5,7 +5,7 @@ namespace simple_network {
         // public static 
         public Image[] images;
 
-        public HashSet<DataPoint> dataPoints;
+        public DataSet dataPoints;
 
         public int setSize; // number of images in the set
 
@@ -24,7 +24,7 @@ namespace simple_network {
 
             images = ImageLoader.GetImageSet(imagesReader,labelsReader,setSize);
 
-            dataPoints = new HashSet<DataPoint>();
+            dataPoints = new();
 
             for (int i = 0; i < images.Length; i++) {
                 Image image = ImageProcessor.RandomizeImage(images[i]);

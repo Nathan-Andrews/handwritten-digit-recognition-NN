@@ -15,12 +15,12 @@ namespace simple_network {
             this.expectedOutput[label] = 1.0;
         }
 
-        private static float transformToCoordinateSpace(double input) {
+        private static float TransformToCoordinateSpace(double input) {
             return (float)((input - 0.5) * 2.0);
         }
 
-        public Vector2 getPointAsCoordinates() {
-            return new Vector2(transformToCoordinateSpace(feature[0]), transformToCoordinateSpace(feature[1]));
+        public readonly Vector2 GetPointAsCoordinates() {
+            return new Vector2(TransformToCoordinateSpace(feature[0]), TransformToCoordinateSpace(feature[1]));
         }
     }
 }
