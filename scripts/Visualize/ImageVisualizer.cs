@@ -36,7 +36,7 @@ namespace simple_network {
                 1.0f,  1.0f,
             };
 
-            _shaderProgram = CreateShaderProgram("Visualize/digit_vertex_shader.glsl", "Visualize/digit_fragment_shader.glsl");
+            _shaderProgram = CreateShaderProgram("scripts/Visualize/Shaders/digit_vertex_shader.glsl", "scripts/Visualize/Shaders/digit_fragment_shader.glsl");
 
             // Create and bind VAO for point
             _vertexArrayObject = GL.GenVertexArray();

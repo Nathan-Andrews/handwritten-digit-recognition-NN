@@ -8,7 +8,7 @@ namespace simple_network {
         // train the network on a set of 2 dimensonal data and visualize how the network changes on a graph
         static void Run2dDataSetVisualization() {
             // HashSet<DataPoint> dataPoints = CSVParser.Parse("/Users/nathanandrews/Desktop/c#_projects/neural_network/untrained-simple-network/data//my_madeup_dataset.csv",2,2);
-            DataSet dataPoints = CSVParser.Parse("/Users/nathanandrews/Desktop/c#_projects/neural_network/untrained-simple-network/data//data.csv",2,2);
+            DataSet dataPoints = CSVParser.Parse("/Users/nathanandrews/Desktop/c#_projects/neural_network/untrained-simple-network/data/training//data.csv",2,2);
             
             using (var window = new Visualize(800, 800, "Gradient Descent Visualization"))
             {
@@ -27,7 +27,7 @@ namespace simple_network {
 
         static void RunImageClassificationTraining() {
             ImageSet trainingSet = new(1000);
-            ImageSet testingSet = new(300,"/Users/nathanandrews/Desktop/c#_projects/neural_network/untrained-simple-network/data/MNIST_ORG/train");
+            ImageSet testingSet = new(300,"./data/training/MNIST_ORG/train");
 
             Network network = new(784,100,10);
 
