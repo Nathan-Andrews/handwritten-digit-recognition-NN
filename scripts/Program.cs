@@ -5,10 +5,12 @@ using System.Runtime.InteropServices;
 
 namespace simple_network {
     public class Program {
+        private static ConsoleKey keyPressed = ConsoleKey.A; 
+
         // train the network on a set of 2 dimensonal data and visualize how the network changes on a graph
         static void Run2dDataSetVisualization() {
             // HashSet<DataPoint> dataPoints = CSVParser.Parse("/Users/nathanandrews/Desktop/c#_projects/neural_network/untrained-simple-network/data//my_madeup_dataset.csv",2,2);
-            DataSet dataPoints = CSVParser.Parse("/Users/nathanandrews/Desktop/c#_projects/neural_network/untrained-simple-network/data/training//data.csv",2,2);
+            DataSet dataPoints = CSVParser.Parse("/Users/nathanandrews/Desktop/c#_projects/neural_network/untrained-simple-network/data/training//data2.csv",2,2);
             
             using (var window = new Visualize(800, 800, "Gradient Descent Visualization"))
             {
@@ -31,6 +33,9 @@ namespace simple_network {
 
             Network network = new(784,100,10);
 
+            Thread keyThread = new Thread(WaitForKey);
+            keyThread.Start();
+
             int epoch = 0;
             while (true) {
                 epoch++;
@@ -42,6 +47,31 @@ namespace simple_network {
                     double testingSetAccuracy = network.GetAccuracy(testingSet.dataPoints);
                     Console.WriteLine($"[{epoch}] {Math.Round(trainingSetAccuracy,4)} | {Math.Round(testingSetAccuracy,4)}");
                 }
+
+                if (keyPressed.Equals(ConsoleKey.Escape)) {
+                    Console.WriteLine("exiting");
+                    NetworkFile.SaveNetwork(network,"test",true);
+                    break;
+                }
+            }
+
+            keyThread.Join();
+        }
+
+        static void RunPretrainedImageClassification() {
+            ImageSet testingSet = new(-1,"./data/training/MNIST_ORG/t10k");
+
+            Network network = NetworkFile.LoadNetwork("test");
+
+            double accuracy = network.GetAccuracy(testingSet.dataPoints);
+            Console.WriteLine($"{Math.Round(accuracy,4)}");
+        }
+
+        private static void WaitForKey()
+        {
+            while (!keyPressed.Equals(ConsoleKey.Escape)) {
+                ConsoleKeyInfo keyInfo = Console.ReadKey(); // Wait for a key press
+                keyPressed = keyInfo.Key;
             }
         }
 
@@ -52,7 +82,9 @@ namespace simple_network {
 
             // RunImageDatasetVisualization();
 
-            RunImageClassificationTraining();
+            // RunImageClassificationTraining();
+
+            RunPretrainedImageClassification();
         }
     }
 }

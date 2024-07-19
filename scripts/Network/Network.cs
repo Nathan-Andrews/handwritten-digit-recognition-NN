@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 namespace simple_network {
 
     public class Network {
-        Layer[] layers;
+        public Layer[] layers;
         readonly int batchSize = 16; // the size of the minibatch used when calculating the cost
         NetworkData[] batchNetworkData;
 

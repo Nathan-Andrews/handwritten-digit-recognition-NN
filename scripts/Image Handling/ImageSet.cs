@@ -11,7 +11,7 @@ namespace simple_network {
 
         public Tuple<int, int> imageDimensions;
 
-        public ImageSet(int size = -1,string path = "./data/training/MNIST_ORG/t10k") {
+        public ImageSet(int size = -1,string path = "./data/training/MNIST_ORG/train") {
             IDXReader imagesReader = new($"{path}-images.idx3-ubyte");
             IDXReader labelsReader = new($"{path}-labels.idx1-ubyte");
 
