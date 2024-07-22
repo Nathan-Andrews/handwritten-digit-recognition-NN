@@ -5,6 +5,7 @@ using OpenTK.Windowing.Desktop;
 using OpenTK;
 using OpenTK.Input;
 using OpenTK.Platform.Windows;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace simple_network {
     public class DrawingVisualizer : GameWindow {
@@ -13,7 +14,7 @@ namespace simple_network {
         private int _drawingTexture;
 
         private Image _drawnDigit;
-        // private Image _digit;
+        private Image _digit;
 
         private bool _mouseDown = false;
         private float _lastCursorX = 0;
@@ -28,6 +29,7 @@ namespace simple_network {
 
         public DrawingVisualizer(int width, string title) : base(GameWindowSettings.Default, new NativeWindowSettings() { ClientSize = new Vector2i(width, width), Title = title})
         {
+            _digit = new(28);
             _drawnDigit = new Image(width*width);
             _cursorPositionBuffer = new HashSet<Vector2>();
             _cursorThread = new Thread(CursorThread);
@@ -143,10 +145,10 @@ namespace simple_network {
         }
 
         private void DrawCircle(double cursorX, double cursorY) {
-            int _radius = 10;
+            int _radius = 20;
 
-            int x0 = (int) Math.Floor(cursorX - _radius);
-            int y0 = (int) Math.Floor(cursorY - _radius);
+            int x0 = (int) Math.Max(0,Math.Floor(cursorX - _radius));
+            int y0 = (int) Math.Max(0,Math.Floor(cursorY - _radius));
             int xMax = Math.Min(800, x0 + 2 * _radius);
             int yMax = Math.Min(800, y0 + 2 * _radius);
 
@@ -174,7 +176,10 @@ namespace simple_network {
          }
 
         private void UpdateTexture() {
+            // _digit = ImageProcessor.Downsize(_drawnDigit,784);
+
             int width = 800;
+            // int width = 28;
             float[] data = new float[width * width * 3];
 
             for (int y = 0; y < width; y++)
@@ -191,7 +196,11 @@ namespace simple_network {
             }
 
             GL.BindTexture(TextureTarget.Texture2D, _drawingTexture);
+
             GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgb, width, width, 0, PixelFormat.Rgb, PixelType.Float, data);
+            // GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+            // GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+
             GL.BindTexture(TextureTarget.Texture2D, 0);
         }
 
@@ -210,36 +219,21 @@ namespace simple_network {
 
         }
 
-        // protected override void OnKeyDown(KeyboardKeyEventArgs e) {
-        //     // base.OnKeyDown(e);
+        protected override void OnKeyDown(KeyboardKeyEventArgs e) {
+            // base.OnKeyDown(e);
 
-        //     if (e.Key == Keys.Escape)
-        //     {
-        //         Close(); // Close the window when the Escape key is pressed
-        //     }
-        //     else
-        //     {
-        //         // Console.WriteLine($"Key Down: {e.Key}");
-        //         if (e.Key == Keys.Enter) {
-        //             _renderedDigitIndex++;
-        //             if(_renderedDigitIndex >= _imageSet.images.Length - 1) {
-        //                 Close();
-        //             }
-
-        //             _currentDigit = _imageSet.images[_renderedDigitIndex];
-
-        //             Console.WriteLine(_currentDigit.digit);
-        //         }
-        //         if (e.Key == Keys.Space) {
-        //             _currentDigit = ImageProcessor.RandomizeImage(_imageSet.images[_renderedDigitIndex]);
-        //         }
-        //     }
-        // }
-
-        protected override void OnKeyUp(KeyboardKeyEventArgs e) {
-            // base.OnKeyUp(e);
-
-            // Console.WriteLine($"Key Up: {e.Key}");
+            if (e.Key == Keys.Escape)
+            {
+                Close(); // Close the window when the Escape key is pressed
+            }
+            else
+            {
+                if (e.Key == Keys.Space) {
+                    // _digit = ImageProcessor.Downsize(_drawnDigit,784);
+                    // _digit.PrintImageAsAsciiArt();
+                    _drawnDigit = new(_drawnDigit.size);
+                }
+            }
         }
 
         private int CreateShaderProgram(string vertexPath, string fragmentPath)

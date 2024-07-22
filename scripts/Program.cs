@@ -12,7 +12,7 @@ namespace simple_network {
             // HashSet<DataPoint> dataPoints = CSVParser.Parse("/Users/nathanandrews/Desktop/c#_projects/neural_network/untrained-simple-network/data//my_madeup_dataset.csv",2,2);
             DataSet dataPoints = CSVParser.Parse("/Users/nathanandrews/Desktop/c#_projects/neural_network/untrained-simple-network/data/training//data2.csv",2,2);
             
-            using (var window = new Visualize(800, 800, "Gradient Descent Visualization"))
+            using (var window = new TrainingVisualizer(800, 800, "Gradient Descent Visualization"))
             {
                 window.AddPoints(dataPoints);
                 window.Run();

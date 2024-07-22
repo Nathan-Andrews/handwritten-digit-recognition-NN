@@ -72,6 +72,35 @@ namespace simple_network {
         // private static Image Blur()
         // private static Image Noiseify()
 
+        public static Image Downsize(Image old, int size) {
+            Image image = new(size);
+
+            double ratio = (double) image.width / old.width;
+
+            for (int x = 0; x <  image.width; x++) {
+                for (int y = 0; y < image.width; y++) {
+                    int x0 = (int) Math.Floor(x / ratio);
+                    int y0 = (int) Math.Floor(y / ratio);
+                    int xMax = (int) Math.Ceiling(1 / ratio) + x0;
+                    int yMax = (int) Math.Ceiling(1 / ratio) + y0;
+
+                    double pixel = 0.0;
+                    int count = 0;
+
+                    for (int xi = x0; xi < xMax; xi++) {
+                        for (int yi = y0; yi < yMax; yi++) {
+                            count++;
+                            pixel += old.pixels[old.GetIndex2d(xi,yi)];
+                        }
+                    }
+
+                    image.pixels[image.GetIndex2d(x,y)] = Math.Min(pixel / count,1);
+                }
+            }
+
+            return image;
+        }
+
         static double InterpolatePixel(Image image, double xTransformed, double yTransformed) {
             double pixel = 0.0;
 
