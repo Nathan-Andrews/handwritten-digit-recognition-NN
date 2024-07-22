@@ -39,7 +39,7 @@ namespace simple_network {
             return maxIndex;
         }
 
-        double[] GetOutputs(double[] inputs) {
+        public double[] GetOutputs(double[] inputs) {
             foreach (Layer layer in layers) {
                 inputs = layer.GetLayerOutputs(inputs);
             }

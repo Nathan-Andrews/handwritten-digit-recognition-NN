@@ -5,15 +5,15 @@ namespace simple_network {
         public static Image RandomizeImage(Image old) {
             Random random= new();
 
-            Image image = Scale(old,GenerateNormalRandom(1.0,0.15) - 0.1);
-            image = Transform(image,GenerateNormalRandom(0.0,1.5), GenerateNormalRandom(0.0,1.5));
+            Image image = Scale(old,GenerateNormalRandom(1.0,0.2) - 0.1);
+            image = Transform(image,GenerateNormalRandom(0.0,2.5), GenerateNormalRandom(0.0,1.5));
             image = Rotate(image,GenerateNormalRandom(0.0,0.25));
 
             return image;
         }
 
 
-        private static Image Transform(Image old, double xShift,double yShift) {
+        public static Image Transform(Image old, double xShift,double yShift) {
             Image image= new(old.size,old.pixels,old.digit);
 
             Parallel.For(0,old.width, (x) => { // no massive performance gain from having this parallel, but why not?
@@ -28,7 +28,7 @@ namespace simple_network {
             return image;
         }
 
-        private static Image Rotate(Image old, double theta) {
+        public static Image Rotate(Image old, double theta) {
             Image image= new(old.size,old.pixels,old.digit);
 
             Parallel.For(0,old.width, (x) => { // no massive performance gain from having this parallel, but why not?
@@ -49,7 +49,7 @@ namespace simple_network {
             return image;
         }
 
-        private static Image Scale(Image old, double scalingFactor) {
+        public static Image Scale(Image old, double scalingFactor) {
             Image image= new(old.size,old.pixels,old.digit);
 
             Parallel.For(0,old.width, (x) => { // no massive performance gain from having this parallel, but why not?
@@ -94,7 +94,7 @@ namespace simple_network {
                         }
                     }
 
-                    image.pixels[image.GetIndex2d(x,y)] = Math.Min(pixel / count,1);
+                    image.pixels[image.GetIndex2d(-(y - image.width + 1),x)] = Math.Min(pixel / count,1);
                 }
             }
 

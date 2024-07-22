@@ -27,6 +27,8 @@ namespace simple_network {
 
         private object _lock = new();
 
+        public Network? _network;
+
         public DrawingVisualizer(int width, string title) : base(GameWindowSettings.Default, new NativeWindowSettings() { ClientSize = new Vector2i(width, width), Title = title})
         {
             _digit = new(28);
@@ -145,7 +147,7 @@ namespace simple_network {
         }
 
         private void DrawCircle(double cursorX, double cursorY) {
-            int _radius = 20;
+            int _radius = 15;
 
             int x0 = (int) Math.Max(0,Math.Floor(cursorX - _radius));
             int y0 = (int) Math.Max(0,Math.Floor(cursorY - _radius));
@@ -176,7 +178,12 @@ namespace simple_network {
          }
 
         private void UpdateTexture() {
-            // _digit = ImageProcessor.Downsize(_drawnDigit,784);
+            _digit = ImageProcessor.Scale(ImageProcessor.Downsize(_drawnDigit,784),1.1);
+
+            if (_network != null) {
+                // double[]? results = _network?.GetOutputs(_digit.pixels);
+                Console.WriteLine(_network?.Classify(_digit.pixels));
+            }
 
             int width = 800;
             // int width = 28;
@@ -224,6 +231,7 @@ namespace simple_network {
 
             if (e.Key == Keys.Escape)
             {
+                // _digit.PrintImageAsAsciiArt();
                 Close(); // Close the window when the Escape key is pressed
             }
             else

@@ -28,8 +28,8 @@ namespace simple_network {
         }
 
         static void RunImageClassificationTraining() {
-            ImageSet trainingSet = new(1000);
-            ImageSet testingSet = new(300,"./data/training/MNIST_ORG/train");
+            ImageSet trainingSet = new(-1);
+            ImageSet testingSet = new(-1,"./data/training/MNIST_ORG/t10k");
 
             Network network = new(784,100,10);
 
@@ -50,7 +50,7 @@ namespace simple_network {
 
                 if (keyPressed.Equals(ConsoleKey.Escape)) {
                     Console.WriteLine("exiting");
-                    NetworkFile.SaveNetwork(network,"test",true);
+                    NetworkFile.SaveNetwork(network,"digit_recognition.ubyte",true);
                     break;
                 }
             }
@@ -68,7 +68,10 @@ namespace simple_network {
         }
 
         static void RunImageDrawingClassification() {
+            Network network = NetworkFile.LoadNetwork("digit_recognition.ubyte");
+
             using (var window = new DrawingVisualizer(800, "Drawing Visualization")) {
+                window._network = network;
                 window.Run();
             }
         }
