@@ -17,6 +17,16 @@ namespace simple_network {
             this.width = (int) Math.Sqrt(size);
         }
 
+        public Image(int size) { // creates a completely black image
+            this.size = size;
+            this.pixels = new double[size];
+            for (int i = 0; i < size; i++) {
+                this.pixels[i] = 0;
+            }
+            this.digit = -1;
+            this.width = (int) Math.Sqrt(size);
+        }
+
         public int GetIndex2d(int x, int y) {
             return x * width + y;
         }

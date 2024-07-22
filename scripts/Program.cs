@@ -67,6 +67,12 @@ namespace simple_network {
             Console.WriteLine($"{Math.Round(accuracy,4)}");
         }
 
+        static void RunImageDrawingClassification() {
+            using (var window = new DrawingVisualizer(800, "Drawing Visualization")) {
+                window.Run();
+            }
+        }
+
         private static void WaitForKey()
         {
             while (!keyPressed.Equals(ConsoleKey.Escape)) {
@@ -84,7 +90,9 @@ namespace simple_network {
 
             // RunImageClassificationTraining();
 
-            RunPretrainedImageClassification();
+            // RunPretrainedImageClassification();
+
+            RunImageDrawingClassification();
         }
     }
 }
