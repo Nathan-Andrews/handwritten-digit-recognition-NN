@@ -9,14 +9,13 @@ using System.Threading;
 
 
 namespace simple_network {
-    public class TrainingVisualizer : GameWindow
+    public class TrainingVisualizer : Visualize
     {
         private int _boundryShaderProgram;
         private int _pointShaderProgram;
         private int _boundryVertexArrayObject;
         private int _boundryTexture;
         private int _pointVertexArrayObject;
-        private int _pointVertexBufferObject;
         private Vector2[] _pointsArray = new Vector2[100];
         private int[] _pointsClasses = new int[100];
         private float _pointRadius = 0.02f;
@@ -25,76 +24,32 @@ namespace simple_network {
         public Network network = new Network(2,3,2);
         public DataSet? _dataPoints;
         private bool _continueTraining = true;
-        private object _lock = new object();
+        // private object _lock = new object();
         private int _epochCounter = 0;
         private Thread _trainingThread;
 
-        public TrainingVisualizer(int width, int height, string title) : base(GameWindowSettings.Default, new NativeWindowSettings() { ClientSize = new Vector2i(width, height), Title = title })
-        {
+        public TrainingVisualizer(int width, int height, string title) : base(width, height, title) {
             _trainingThread = new Thread(TrainNeuralNetwork);
         }
 
-        protected override void OnLoad()
-        {
+        protected override void OnLoad() {
             base.OnLoad();
 
             // Load and compile shaders
             _boundryShaderProgram = CreateShaderProgram("scripts/Visualize/Shaders/texture_vertex_shader.glsl", "scripts/Visualize/Shaders/texture_fragment_shader.glsl");
             _pointShaderProgram = CreateShaderProgram("scripts/Visualize/Shaders/point_vertex_shader.glsl", "scripts/Visualize/Shaders/point_fragment_shader.glsl");
 
-            // Set up boundry vertex data (covering the entire screen)
-            float[] boundryVertices = {
-                -1.0f, -1.0f, 0.0f,
-                1.0f, -1.0f, 0.0f,
-                -1.0f,  1.0f, 0.0f,
-                1.0f,  1.0f, 0.0f,
-            };
+            _boundryVertexArrayObject = CreateAndBindVAO();
 
-            // Create and bind VAO for boundry
-            _boundryVertexArrayObject = GL.GenVertexArray();
-            GL.BindVertexArray(_boundryVertexArrayObject);
+            _pointVertexArrayObject = CreateAndBindVAO();
 
-            int boundryVbo = GL.GenBuffer();
-            GL.BindBuffer(BufferTarget.ArrayBuffer, boundryVbo);
-            GL.BufferData(BufferTarget.ArrayBuffer, boundryVertices.Length * sizeof(float), boundryVertices, BufferUsageHint.StaticDraw);
+            _boundryTexture = CreateAndBindTexture();
 
-            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 3 * sizeof(float), 0);
-            GL.EnableVertexAttribArray(0);
-
-            // Set up point vertex data (just a single point, we'll expand it in the shader)
-            float[] pointVertices = {
-                -1.0f, -1.0f,
-                1.0f, -1.0f,
-                -1.0f,  1.0f,
-                1.0f,  1.0f,
-            };
-
-            // Create and bind VAO for point
-            _pointVertexArrayObject = GL.GenVertexArray();
-            GL.BindVertexArray(_pointVertexArrayObject);
-
-            _pointVertexBufferObject = GL.GenBuffer();
-            GL.BindBuffer(BufferTarget.ArrayBuffer, _pointVertexBufferObject);
-            GL.BufferData(BufferTarget.ArrayBuffer, pointVertices.Length * sizeof(float), pointVertices, BufferUsageHint.StaticDraw);
-
-            GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, 2 * sizeof(float), 0);
-            GL.EnableVertexAttribArray(0);
-
-            GL.BindVertexArray(0);
-
-            _boundryTexture = GL.GenTexture();
-            GL.BindTexture(TextureTarget.Texture2D, _boundryTexture);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-
-            // Compute and update texture with decision boundary
             UpdateDecisionBoundaryTexture();
 
-            // Unbind texture
-            GL.BindTexture(TextureTarget.Texture2D, 0);
+            UnbindTexture();
 
-            // Set clear color
-            GL.ClearColor(Color4.CornflowerBlue);
+            SetClearColor();
 
             // Start training thread
             _trainingThread.Start();
@@ -180,8 +135,7 @@ namespace simple_network {
         {
             base.OnRenderFrame(e);
 
-            // Clear the screen
-            GL.Clear(ClearBufferMask.ColorBufferBit);
+            ClearScreen();
 
             UpdateDecisionBoundaryTexture();
 
@@ -220,12 +174,6 @@ namespace simple_network {
             }
         }
 
-        protected override void OnResize(ResizeEventArgs e)
-        {
-            base.OnResize(e);
-            GL.Viewport(0, 0, ClientSize.X, ClientSize.Y);
-        }
-
         protected override void OnUnload()
         {
             base.OnUnload();
@@ -235,53 +183,6 @@ namespace simple_network {
             GL.DeleteVertexArray(_pointVertexArrayObject);
             GL.DeleteProgram(_boundryShaderProgram);
             GL.DeleteProgram(_pointShaderProgram);
-        }
-
-        private int CreateShaderProgram(string vertexPath, string fragmentPath)
-        {
-            string vertexShaderSource = File.ReadAllText(vertexPath);
-            string fragmentShaderSource = File.ReadAllText(fragmentPath);
-
-            int vertexShader = GL.CreateShader(ShaderType.VertexShader);
-            GL.ShaderSource(vertexShader, vertexShaderSource);
-            GL.CompileShader(vertexShader);
-            CheckShaderCompileStatus(vertexShader);
-
-            int fragmentShader = GL.CreateShader(ShaderType.FragmentShader);
-            GL.ShaderSource(fragmentShader, fragmentShaderSource);
-            GL.CompileShader(fragmentShader);
-            CheckShaderCompileStatus(fragmentShader);
-
-            int shaderProgram = GL.CreateProgram();
-            GL.AttachShader(shaderProgram, vertexShader);
-            GL.AttachShader(shaderProgram, fragmentShader);
-            GL.LinkProgram(shaderProgram);
-            CheckProgramLinkStatus(shaderProgram);
-
-            GL.DeleteShader(vertexShader);
-            GL.DeleteShader(fragmentShader);
-
-            return shaderProgram;
-        }
-
-        private void CheckShaderCompileStatus(int shader)
-        {
-            GL.GetShader(shader, ShaderParameter.CompileStatus, out int success);
-            if (success == 0)
-            {
-                string infoLog = GL.GetShaderInfoLog(shader);
-                throw new Exception($"Error compiling shader: {infoLog}");
-            }
-        }
-
-        private void CheckProgramLinkStatus(int program)
-        {
-            GL.GetProgram(program, GetProgramParameterName.LinkStatus, out int success);
-            if (success == 0)
-            {
-                string infoLog = GL.GetProgramInfoLog(program);
-                throw new Exception($"Error linking program: {infoLog}");
-            }
         }
     }
 }

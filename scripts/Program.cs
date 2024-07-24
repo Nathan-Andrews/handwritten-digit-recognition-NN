@@ -76,8 +76,7 @@ namespace simple_network {
             }
         }
 
-        private static void WaitForKey()
-        {
+        private static void WaitForKey() {
             while (!keyPressed.Equals(ConsoleKey.Escape)) {
                 ConsoleKeyInfo keyInfo = Console.ReadKey(); // Wait for a key press
                 keyPressed = keyInfo.Key;

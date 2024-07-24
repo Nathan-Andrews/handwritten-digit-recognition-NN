@@ -8,7 +8,7 @@ using OpenTK.Platform.Windows;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace simple_network {
-    public class DrawingVisualizer : GameWindow {
+    public class DrawingVisualizer : Visualize {
         private int _textureShaderProgram;
         private int _textureVertexArrayObject;
         private int _drawingTexture;
@@ -29,7 +29,7 @@ namespace simple_network {
 
         public Network? _network;
 
-        public DrawingVisualizer(int width, string title) : base(GameWindowSettings.Default, new NativeWindowSettings() { ClientSize = new Vector2i(width, width), Title = title})
+        public DrawingVisualizer(int width, string title) : base(width, width, title)
         {
             _digit = new(28);
             _drawnDigit = new Image(width*width);
@@ -44,38 +44,16 @@ namespace simple_network {
             // Load and compile shaders
             _textureShaderProgram = CreateShaderProgram("scripts/Visualize/Shaders/texture_vertex_shader.glsl", "scripts/Visualize/Shaders/texture_fragment_shader.glsl");
 
-            float[] textureVertices = {
-                -1.0f, -1.0f, 0.0f,
-                1.0f, -1.0f, 0.0f,
-                -1.0f,  1.0f, 0.0f,
-                1.0f,  1.0f, 0.0f,
-            };
+            _textureVertexArrayObject = CreateAndBindVAO();
 
-            _textureVertexArrayObject = GL.GenVertexArray();
-            GL.BindVertexArray(_textureVertexArrayObject);
-
-            int vbo = GL.GenBuffer();
-            GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
-            GL.BufferData(BufferTarget.ArrayBuffer, textureVertices.Length * sizeof(float), textureVertices, BufferUsageHint.StaticDraw);
-
-            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 3 * sizeof(float), 0);
-            GL.EnableVertexAttribArray(0);
-
-            GL.BindVertexArray(0);
-
-            _drawingTexture = GL.GenTexture();
-            GL.BindTexture(TextureTarget.Texture2D, _drawingTexture);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+            _drawingTexture = CreateAndBindTexture();
 
             // Compute and update texture with decision boundary
             UpdateTexture();
 
-            // Unbind texture
-            GL.BindTexture(TextureTarget.Texture2D, 0);
+            UnbindTexture();
 
-            // Set clear color
-            GL.ClearColor(Color4.CornflowerBlue);
+            SetClearColor();
 
             _cursorThread.Start();
         }
@@ -86,8 +64,7 @@ namespace simple_network {
 
             HandleMouse();
 
-            // Clear the screen
-            GL.Clear(ClearBufferMask.ColorBufferBit);
+            ClearScreen();
 
             UpdateTexture();
 
@@ -96,7 +73,6 @@ namespace simple_network {
             GL.BindTexture(TextureTarget.Texture2D,_drawingTexture);
             GL.DrawArrays(PrimitiveType.TriangleStrip, 0, 4);
 
-            GL.DrawArrays(PrimitiveType.TriangleStrip, 0, 4);
 
             SwapBuffers();
         }
@@ -211,11 +187,6 @@ namespace simple_network {
             GL.BindTexture(TextureTarget.Texture2D, 0);
         }
 
-        protected override void OnResize(ResizeEventArgs e) {
-            base.OnResize(e);
-            GL.Viewport(0, 0, ClientSize.X, ClientSize.Y);
-        }
-
         protected override void OnUnload() {
             base.OnUnload();
             GL.DeleteVertexArray(_textureVertexArrayObject);
@@ -226,69 +197,10 @@ namespace simple_network {
 
         }
 
-        protected override void OnKeyDown(KeyboardKeyEventArgs e) {
-            // base.OnKeyDown(e);
-
-            if (e.Key == Keys.Escape)
-            {
-                // _digit.PrintImageAsAsciiArt();
-                Close(); // Close the window when the Escape key is pressed
-            }
-            else
-            {
-                if (e.Key == Keys.Space) {
-                    // _digit = ImageProcessor.Downsize(_drawnDigit,784);
-                    // _digit.PrintImageAsAsciiArt();
-                    _drawnDigit = new(_drawnDigit.size);
-                }
-            }
-        }
-
-        private int CreateShaderProgram(string vertexPath, string fragmentPath)
+        protected override void KeyPressedSpace()
         {
-            string vertexShaderSource = File.ReadAllText(vertexPath);
-            string fragmentShaderSource = File.ReadAllText(fragmentPath);
-
-            int vertexShader = GL.CreateShader(ShaderType.VertexShader);
-            GL.ShaderSource(vertexShader, vertexShaderSource);
-            GL.CompileShader(vertexShader);
-            CheckShaderCompileStatus(vertexShader);
-
-            int fragmentShader = GL.CreateShader(ShaderType.FragmentShader);
-            GL.ShaderSource(fragmentShader, fragmentShaderSource);
-            GL.CompileShader(fragmentShader);
-            CheckShaderCompileStatus(fragmentShader);
-
-            int shaderProgram = GL.CreateProgram();
-            GL.AttachShader(shaderProgram, vertexShader);
-            GL.AttachShader(shaderProgram, fragmentShader);
-            GL.LinkProgram(shaderProgram);
-            CheckProgramLinkStatus(shaderProgram);
-
-            GL.DeleteShader(vertexShader);
-            GL.DeleteShader(fragmentShader);
-
-            return shaderProgram;
-        }
-
-        private static void CheckShaderCompileStatus(int shader)
-        {
-            GL.GetShader(shader, ShaderParameter.CompileStatus, out int success);
-            if (success == 0)
-            {
-                string infoLog = GL.GetShaderInfoLog(shader);
-                throw new Exception($"Error compiling shader: {infoLog}");
-            }
-        }
-
-        private static void CheckProgramLinkStatus(int program)
-        {
-            GL.GetProgram(program, GetProgramParameterName.LinkStatus, out int success);
-            if (success == 0)
-            {
-                string infoLog = GL.GetProgramInfoLog(program);
-                throw new Exception($"Error linking program: {infoLog}");
-            }
+            // clear the canvas
+            _drawnDigit = new(_drawnDigit.size);
         }
     }
 }

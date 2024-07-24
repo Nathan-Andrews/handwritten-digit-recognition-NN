@@ -6,17 +6,16 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 using System;
 
 namespace simple_network {
-    public class ImageVisualizer : GameWindow {
+    public class ImageVisualizer : Visualize {
         private int _shaderProgram;
         private int _vertexArrayObject;
-        private int _vertexBufferObject;
         private ImageSet _imageSet;
 
         private int _renderedDigitIndex = 0;
         private Image _currentDigit;
 
 
-        public ImageVisualizer(int width, int height, string title, ImageSet imageSet) : base(GameWindowSettings.Default, new NativeWindowSettings() { ClientSize = new Vector2i(width, height), Title = title })
+        public ImageVisualizer(int width, int height, string title, ImageSet imageSet) : base(width, height,title)
         {
             this._imageSet = imageSet;
             this._currentDigit = imageSet.images[_renderedDigitIndex];
@@ -25,41 +24,16 @@ namespace simple_network {
         protected override void OnLoad() {
             base.OnLoad();
 
-            // load keypress detection
-            this.KeyDown += OnKeyDown;
-            this.KeyUp += OnKeyUp;
-
-            float[] vertices = {
-                -1.0f, -1.0f,
-                1.0f, -1.0f,
-                -1.0f,  1.0f,
-                1.0f,  1.0f,
-            };
-
             _shaderProgram = CreateShaderProgram("scripts/Visualize/Shaders/digit_vertex_shader.glsl", "scripts/Visualize/Shaders/digit_fragment_shader.glsl");
 
-            // Create and bind VAO for point
-            _vertexArrayObject = GL.GenVertexArray();
-            GL.BindVertexArray(_vertexArrayObject);
-
-            _vertexBufferObject = GL.GenBuffer();
-            GL.BindBuffer(BufferTarget.ArrayBuffer, _vertexBufferObject);
-            GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * sizeof(float), vertices, BufferUsageHint.StaticDraw);
-
-            GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, 2 * sizeof(float), 0);
-            GL.EnableVertexAttribArray(0);
-
-            GL.BindVertexArray(0);
+            _vertexArrayObject = CreateAndBindVAO();
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)
         {
             base.OnRenderFrame(e);
 
-            // Clear the screen
-            GL.Clear(ClearBufferMask.ColorBufferBit);
-
-            // Render boundry background
+            ClearScreen();
 
             // Render points on top of the boundry background
             GL.UseProgram(_shaderProgram);
@@ -82,94 +56,27 @@ namespace simple_network {
             GL.Uniform1(pixelsLocation,pixels.Length,pixels);
         }
 
-        protected override void OnResize(ResizeEventArgs e) {
-            base.OnResize(e);
-            GL.Viewport(0, 0, ClientSize.X, ClientSize.Y);
-        }
-
         protected override void OnUnload() {
             base.OnUnload();
             GL.DeleteVertexArray(_vertexArrayObject);
             GL.DeleteProgram(_shaderProgram);
         }
 
-        protected override void OnKeyDown(KeyboardKeyEventArgs e) {
-            // base.OnKeyDown(e);
-
-            if (e.Key == Keys.Escape)
-            {
-                Close(); // Close the window when the Escape key is pressed
-            }
-            else
-            {
-                // Console.WriteLine($"Key Down: {e.Key}");
-                if (e.Key == Keys.Enter) {
-                    _renderedDigitIndex++;
-                    if(_renderedDigitIndex >= _imageSet.images.Length - 1) {
-                        Close();
-                    }
-
-                    _currentDigit = _imageSet.images[_renderedDigitIndex];
-
-                    Console.WriteLine(_currentDigit.digit);
-                }
-                if (e.Key == Keys.Space) {
-                    _currentDigit = ImageProcessor.RandomizeImage(_imageSet.images[_renderedDigitIndex]);
-                }
-            }
-        }
-
-        protected override void OnKeyUp(KeyboardKeyEventArgs e) {
-            // base.OnKeyUp(e);
-
-            // Console.WriteLine($"Key Up: {e.Key}");
-        }
-
-        private int CreateShaderProgram(string vertexPath, string fragmentPath)
+        protected override void KeyPressedEnter()
         {
-            string vertexShaderSource = File.ReadAllText(vertexPath);
-            string fragmentShaderSource = File.ReadAllText(fragmentPath);
+            _renderedDigitIndex++;
+            if(_renderedDigitIndex >= _imageSet.images.Length - 1) {
+                Close();
+            }
 
-            int vertexShader = GL.CreateShader(ShaderType.VertexShader);
-            GL.ShaderSource(vertexShader, vertexShaderSource);
-            GL.CompileShader(vertexShader);
-            CheckShaderCompileStatus(vertexShader);
+            _currentDigit = _imageSet.images[_renderedDigitIndex];
 
-            int fragmentShader = GL.CreateShader(ShaderType.FragmentShader);
-            GL.ShaderSource(fragmentShader, fragmentShaderSource);
-            GL.CompileShader(fragmentShader);
-            CheckShaderCompileStatus(fragmentShader);
-
-            int shaderProgram = GL.CreateProgram();
-            GL.AttachShader(shaderProgram, vertexShader);
-            GL.AttachShader(shaderProgram, fragmentShader);
-            GL.LinkProgram(shaderProgram);
-            CheckProgramLinkStatus(shaderProgram);
-
-            GL.DeleteShader(vertexShader);
-            GL.DeleteShader(fragmentShader);
-
-            return shaderProgram;
+            Console.WriteLine(_currentDigit.digit);
         }
 
-        private static void CheckShaderCompileStatus(int shader)
+        protected override void KeyPressedSpace()
         {
-            GL.GetShader(shader, ShaderParameter.CompileStatus, out int success);
-            if (success == 0)
-            {
-                string infoLog = GL.GetShaderInfoLog(shader);
-                throw new Exception($"Error compiling shader: {infoLog}");
-            }
-        }
-
-        private static void CheckProgramLinkStatus(int program)
-        {
-            GL.GetProgram(program, GetProgramParameterName.LinkStatus, out int success);
-            if (success == 0)
-            {
-                string infoLog = GL.GetProgramInfoLog(program);
-                throw new Exception($"Error linking program: {infoLog}");
-            }
+            _currentDigit = ImageProcessor.RandomizeImage(_imageSet.images[_renderedDigitIndex]);
         }
     }
 }
