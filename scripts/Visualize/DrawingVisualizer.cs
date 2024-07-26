@@ -28,6 +28,7 @@ namespace simple_network {
         private object _lock = new();
 
         public Network? _network;
+        private static readonly string[] spelledDigits = {"Zero","One","Two","Three","Four","Five","Six","Seven","Eight","Nine"};
 
         public DrawingVisualizer(int width, string title) : base(width, width, title)
         {
@@ -152,14 +153,39 @@ namespace simple_network {
                 DrawCircle(cursorX + i * dx, cursorY + i * dy);
             }
          }
+        private void Classify() {
+            double [] output = _network?.GetOutputs(_digit.pixels) ?? Array.Empty<double>();
+            
+            int maxIndex = 0;
+            double sum = 0;
+
+            for (int i = 0; i < output.Length; i++) {
+                if (output[i] > output[maxIndex]) maxIndex = i;
+                sum += output[i];
+            }
+
+            Console.Write('|');
+
+            for (int i = 0; i < output.Length; i++) {
+                if (i == maxIndex) {
+                    ConsoleColor originalForegroundColor = Console.ForegroundColor;
+
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.Write($" \x1b[1m{spelledDigits[i]} {Math.Round(output[i] * 100 / sum)}%\x1b[0m |");
+
+                    Console.ForegroundColor = originalForegroundColor;
+                }
+                else {
+                    Console.Write($" {spelledDigits[i]} {Math.Round(output[i] * 100 / sum)}% |");
+                }
+            }
+            Console.SetCursorPosition(0, Console.CursorTop);
+        }
 
         private void UpdateTexture() {
             _digit = ImageProcessor.Scale(ImageProcessor.Downsize(_drawnDigit,784),1.1);
 
-            if (_network != null) {
-                // double[]? results = _network?.GetOutputs(_digit.pixels);
-                Console.WriteLine(_network?.Classify(_digit.pixels));
-            }
+            Classify();
 
             int width = 800;
             // int width = 28;

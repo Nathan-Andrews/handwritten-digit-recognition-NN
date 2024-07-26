@@ -2,7 +2,7 @@
     "Program": {
         "ImageClassification" : {
             "DoClassification" : true,
-            "StoredNetworkFile" : "digit_recognition.weights-ubyte",
+            "StoredNetworkFile" : "digit_recognitionV2.weights-ubyte",
             "DoDrawingMode" : true,
             "DoAccuracyCheck" : false
         },
