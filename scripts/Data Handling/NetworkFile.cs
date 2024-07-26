@@ -31,17 +31,17 @@ namespace simple_network {
             string directory = "./data/stored networks/";
 
             if (!overwrite) {
-                string newFilename = filename;
-                int counter = 1;
-                while (File.Exists(Path.Combine(directory, newFilename)))
+                string extension = Path.GetExtension(filename);
+
+                string newFilename = Path.GetFileNameWithoutExtension(filename);
+                int counter = 2;
+                while (File.Exists(Path.Combine(directory, newFilename+extension)))
                 {
                     newFilename = $"{newFilename}{counter}";
                     counter++;
                 }
-                
-                Console.WriteLine(newFilename);
 
-                filename = newFilename;
+                filename = newFilename+extension;
             }
 
             filename = Path.Combine(directory,filename);
@@ -78,16 +78,20 @@ namespace simple_network {
 
             filename = $"{directory}{filename}";
 
+            Console.WriteLine($"Loading pretrained network file: {filename}");
+
             using (FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.Read)) {
                 using (BinaryReader reader = new BinaryReader(fs))
                 {
                     int numLayers = reader.ReadInt32();
                     int[] layerSizes = new int[numLayers];
 
+                    Console.Write("... Layer sizes:");
                     for (int layer = 0; layer < numLayers; layer++) {
                         layerSizes[layer] = reader.ReadInt32();
-                        Console.WriteLine(layerSizes[layer]);
+                        Console.Write($" {layerSizes[layer]}");
                     }
+                    Console.WriteLine("");
                     network = new Network(layerSizes);
 
                     foreach (Layer layer in network.layers) {

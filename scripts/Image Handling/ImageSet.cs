@@ -37,5 +37,12 @@ namespace simple_network {
 
             Console.WriteLine("... dataset loaded");
         }
+
+        public ImageSet() {
+            images = Array.Empty<Image>();
+            dataPoints = new();
+            setSize = 0;
+            imageDimensions = new Tuple<int, int>(0,0);
+        }
     }
 }

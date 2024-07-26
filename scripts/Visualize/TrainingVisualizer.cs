@@ -21,14 +21,16 @@ namespace simple_network {
         private float _pointRadius = 0.02f;
         private int _pointCount = 0;
 
-        public Network network = new Network(2,3,2);
+        public Network network;
         public DataSet? _dataPoints;
         private bool _continueTraining = true;
         // private object _lock = new object();
         private int _epochCounter = 0;
         private Thread _trainingThread;
 
-        public TrainingVisualizer(int width, int height, string title) : base(width, height, title) {
+        public TrainingVisualizer(int width, int height, string title, int[] layerSizes) : base(width, height, title) {
+            network = new(layerSizes);
+
             _trainingThread = new Thread(TrainNeuralNetwork);
         }
 

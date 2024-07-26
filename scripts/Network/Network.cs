@@ -5,7 +5,7 @@ namespace simple_network {
 
     public class Network {
         public Layer[] layers;
-        readonly int batchSize = 16; // the size of the minibatch used when calculating the cost
+        int batchSize = 16; // the size of the minibatch used when calculating the cost
         NetworkData[] batchNetworkData;
 
         public Network(params int[] layerSizes) {
@@ -22,6 +22,12 @@ namespace simple_network {
             layers = new Layer[old.layers.Count()];
             old.layers.CopyTo(layers, 0);
             batchSize = old.batchSize;
+
+            batchNetworkData = new NetworkData[batchSize];
+        }
+
+        public void SetBatchSize(int batchSize) {
+            this.batchSize = batchSize;
 
             batchNetworkData = new NetworkData[batchSize];
         }

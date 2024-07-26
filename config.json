@@ -1,0 +1,40 @@
+{
+    "Program": {
+        "ImageClassification" : {
+            "DoClassification" : false,
+            "StoredNetworkFile" : "digit_recognition.ubyte",
+            "DoDrawingMode" : true,
+            
+            "DatasetAccuracyCheck" : {
+                "DoDatasetAccuracyCheck" : false,
+                "Dataset" : "./data/training/MNIST_ORG/t10k"
+            }
+        },
+
+        "Training" : {
+            "DoTraining" : false,
+            "IsImage" : true,
+            "IsCSVDataset" : false,
+
+            "Hyperparameters" : {
+                "LayerSizes" : [784,100,10],
+                "MiniBatchSize" : 10,
+                "LearningRate" : 0.1
+            },
+
+            "Dataset" : {
+                "TrainingSetPath" : "./data/training/MNIST_ORG/train",
+                "DoAccuracyCheck" : true,
+                "TestingSetPath" : "./data/training/MNIST_ORG/t10k",
+                "DoImagePreview" : true,
+                "ImagePreviewCount" : 20
+            },
+
+            "Storage" : {
+                "DoNetworkFile" : false,
+                "NetworkFile" : "test",
+                "DoOverwrite" : false
+            }
+        }
+    }
+}

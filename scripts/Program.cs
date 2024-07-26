@@ -2,6 +2,11 @@
 
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using Microsoft.Extensions.Configuration;
+using System;
+using System.IO;
+using System.Collections.Generic;
+using OpenTK.Graphics.ES11;
 
 namespace simple_network {
     public class Program {
@@ -9,10 +14,14 @@ namespace simple_network {
 
         // train the network on a set of 2 dimensonal data and visualize how the network changes on a graph
         static void Run2dDataSetVisualization() {
-            // HashSet<DataPoint> dataPoints = CSVParser.Parse("/Users/nathanandrews/Desktop/c#_projects/neural_network/untrained-simple-network/data//my_madeup_dataset.csv",2,2);
-            DataSet dataPoints = CSVParser.Parse("/Users/nathanandrews/Desktop/c#_projects/neural_network/untrained-simple-network/data/training//data2.csv",2,2);
+            Config config= new Config();
+
+            // "/Users/nathanandrews/Desktop/c#_projects/neural_network/untrained-simple-network/data/training//data2.csv"
+            int numFeatures = config.Training.LayerSizes[0];
+            int numLabels = config.Training.LayerSizes[^1];
+            DataSet dataPoints = CSVParser.Parse(config.Training.TrainingSetPath,numFeatures,numLabels);
             
-            using (var window = new TrainingVisualizer(800, 800, "Gradient Descent Visualization"))
+            using (var window = new TrainingVisualizer(800, 800, "Gradient Descent Visualization",config.Training.LayerSizes))
             {
                 window.AddPoints(dataPoints);
                 window.Run();
@@ -20,7 +29,9 @@ namespace simple_network {
         }
 
         static void RunImageDatasetVisualization() {
-            ImageSet set = new(20);
+            Config config = new();
+
+            ImageSet set = new(config.Training.ImagePreviewCount);
 
             using (var window = new ImageVisualizer(800, 800, "Digit Visualization",set)) {
                 window.Run();
@@ -28,10 +39,15 @@ namespace simple_network {
         }
 
         static void RunImageClassificationTraining() {
-            ImageSet trainingSet = new(-1);
-            ImageSet testingSet = new(-1,"./data/training/MNIST_ORG/t10k");
+            Config config = new Config();
 
-            Network network = new(784,100,10);
+            ImageSet trainingSet = new(-1,config.Training.TrainingSetPath);
+            ImageSet testingSet = config.Training.DoAccuracyCheck
+                ? new(-1,config.Training.TestingSetPath)
+                : new();
+
+            Network network = new(config.Training.LayerSizes);
+            network.SetBatchSize(config.Training.MiniBatchSize);
 
             Thread keyThread = new Thread(WaitForKey);
             keyThread.Start();
@@ -40,17 +56,22 @@ namespace simple_network {
             while (true) {
                 epoch++;
 
-                network.Fit(trainingSet.dataPoints,0.1);
+                network.Fit(trainingSet.dataPoints,config.Training.LearningRate);
 
-                if (epoch % 10 == 0) {
+                if (epoch % 10 == 0 && config.Training.DoAccuracyCheck) {
                     double trainingSetAccuracy = network.GetAccuracy(trainingSet.dataPoints);
                     double testingSetAccuracy = network.GetAccuracy(testingSet.dataPoints);
                     Console.WriteLine($"[{epoch}] {Math.Round(trainingSetAccuracy,4)} | {Math.Round(testingSetAccuracy,4)}");
                 }
 
                 if (keyPressed.Equals(ConsoleKey.Escape)) {
-                    Console.WriteLine("exiting");
-                    NetworkFile.SaveNetwork(network,"digit_recognition.ubyte",true);
+                    if (config.Training.DoNetworkFile) {
+                        Console.WriteLine("... saving and exiting");
+                        NetworkFile.SaveNetwork(network,config.Training.NetworkFile,config.Training.DoOverwrite);
+                    }
+                    else {
+                        Console.WriteLine("... exiting without saving");
+                    }
                     break;
                 }
             }
@@ -59,16 +80,20 @@ namespace simple_network {
         }
 
         static void RunPretrainedImageClassification() {
-            ImageSet testingSet = new(-1,"./data/training/MNIST_ORG/t10k");
+            Config config = new();
 
-            Network network = NetworkFile.LoadNetwork("test");
+            ImageSet testingSet = new(-1,config.ImageClassification.Dataset);
+
+            Network network = NetworkFile.LoadNetwork(config.ImageClassification.StoredNetworkFile);
 
             double accuracy = network.GetAccuracy(testingSet.dataPoints);
             Console.WriteLine($"{Math.Round(accuracy,4)}");
         }
 
         static void RunImageDrawingClassification() {
-            Network network = NetworkFile.LoadNetwork("digit_recognition.ubyte");
+            Config config = new();
+
+            Network network = NetworkFile.LoadNetwork(config.ImageClassification.StoredNetworkFile);
 
             using (var window = new DrawingVisualizer(800, "Drawing Visualization")) {
                 window._network = network;
@@ -84,8 +109,9 @@ namespace simple_network {
         }
 
 
-
         public static void Main(String[] args) {
+            Config config = new Config();
+
             // Run2dDataSetVisualization();
 
             // RunImageDatasetVisualization();
@@ -94,7 +120,37 @@ namespace simple_network {
 
             // RunPretrainedImageClassification();
 
-            RunImageDrawingClassification();
+            // RunImageDrawingClassification();
+
+            if (config.Training.IsImage && config.Training.DoImagePreview) {
+                RunImageDatasetVisualization();
+            }
+
+            if (config.Training.DoTraining) {
+                if (config.Training.IsCSVDataset) {
+                    Run2dDataSetVisualization();
+                }
+                else if (config.Training.IsImage) {
+                    RunImageClassificationTraining();
+                }
+                else {
+                    Config.PrintConfigIssue("Nothing was run.\n ... Either Program.Training.IsImage or Program.Training.IsCSVDataset should be true");
+                }
+            }
+
+            if (config.ImageClassification.DoClassification) {
+                if (config.ImageClassification.DoDatasetAccuracyCheck) {
+                    RunPretrainedImageClassification();
+                }
+
+                if (config.ImageClassification.DoDrawingMode) {
+                    RunImageDrawingClassification();
+                }
+
+                if (!config.ImageClassification.DoDatasetAccuracyCheck && !config.ImageClassification.DoDrawingMode) {
+                    Config.PrintConfigIssue("Nothing was run.\n ... Either Program.ImageClassification.DoDrawingMode or Program.ImageClassification.DatasetAccuracyCheck.DoDatasetAccuracyCheck should be true");
+                }
+            }
         }
     }
 }
