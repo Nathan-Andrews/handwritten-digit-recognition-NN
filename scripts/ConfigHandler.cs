@@ -9,10 +9,12 @@ namespace simple_network {
 
         public TrainingConfig Training;
         public ImageClassificationConfig ImageClassification;
+        public DatasetConfig Dataset;
 
         public Config() {
             Training = new();
             ImageClassification = new();
+            Dataset = new();
         }
 
         public static string Get(string jsonPath) {
@@ -40,15 +42,13 @@ namespace simple_network {
         public bool DoClassification;
         public string StoredNetworkFile;
         public bool DoDrawingMode;
-        public bool DoDatasetAccuracyCheck;
-        public string Dataset;
+        public bool DoAccuracyCheck;
 
         public ImageClassificationConfig() {
             DoClassification = Check("DoClassification");
             StoredNetworkFile = Get("StoredNetworkFile");
             DoDrawingMode = Check("DoDrawingMode");
-            DoDatasetAccuracyCheck = Check("DatasetAccuracyCheck:DoDatasetAccuracyCheck");
-            Dataset = Get("DatasetAccuracyCheck:Dataset");
+            DoAccuracyCheck = Check("DoAccuracyCheck");
         }
 
         bool Check(string jsonPath) {
@@ -62,35 +62,23 @@ namespace simple_network {
 
     struct TrainingConfig {
         public bool DoTraining;
-        public bool IsImage;
-        public bool IsCSVDataset;
         public int[] LayerSizes;
         public int MiniBatchSize;
         public double LearningRate;
-        public string TrainingSetPath;
-        public bool DoAccuracyCheck;
-        public string TestingSetPath;
         public bool DoNetworkFile;
         public string NetworkFile;
         public bool DoOverwrite;
-        public bool DoImagePreview;
-        public int ImagePreviewCount;
+        public bool DoAccuracyCheck;
 
         public TrainingConfig() {
             DoTraining = Check("DoTraining");
-            IsImage = Check("IsImage");
-            IsCSVDataset = Check("IsCSVDataset");
             LayerSizes = GetArray("Hyperparameters");
             MiniBatchSize = int.Parse(Get("Hyperparameters:MiniBatchSize"));
             LearningRate = double.Parse(Get("Hyperparameters:LearningRate"));
-            TrainingSetPath = Get("Dataset:TrainingSetPath");
-            DoAccuracyCheck = Check("Dataset:DoAccuracyCheck");
-            TestingSetPath = Get("Dataset:TestingSetPath");
             DoNetworkFile = Check("Storage:DoNetworkFile");
             NetworkFile = Get("Storage:NetworkFile");
             DoOverwrite = Check("Storage:DoOverwrite");
-            DoImagePreview = Check("Dataset:DoImagePreview");
-            ImagePreviewCount = int.Parse(Get("Dataset:ImagePreviewCount"));
+            DoAccuracyCheck = Check("DoAccuracyCheck");
         }
 
         bool Check(string jsonPath) {
@@ -112,6 +100,32 @@ namespace simple_network {
             configuration.GetSection($"Program:Training:{jsonPath}").Bind(trainingConfig);
 
             return (trainingConfig.LayerSizes ?? new()).ToArray();
+        }
+    }
+
+    struct DatasetConfig {
+        public string TrainingSetPath;
+        public string TestingSetPath;
+        public bool IsImage;
+        public bool IsCSV;
+        public bool DoImagePreview;
+        public int ImagePreviewCount;
+
+        public DatasetConfig() {
+            TrainingSetPath = Get("TrainingSetPath");
+            TestingSetPath = Get("TestingSetPath");
+            IsImage = Check("Format:IsImage");
+            IsCSV = Check("Format:IsCSV");
+            DoImagePreview = Check("Format:DoImagePreview");
+            ImagePreviewCount = int.Parse(Get("Format:ImagePreviewCount"));
+        }
+
+        bool Check(string jsonPath) {
+            return Config.Check($"Dataset:{jsonPath}");
+        }
+
+        string Get(string jsonPath) {
+            return Config.Get($"Dataset:{jsonPath}");
         }
     }
 }

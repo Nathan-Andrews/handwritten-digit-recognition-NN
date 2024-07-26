@@ -19,7 +19,7 @@ namespace simple_network {
             // "/Users/nathanandrews/Desktop/c#_projects/neural_network/untrained-simple-network/data/training//data2.csv"
             int numFeatures = config.Training.LayerSizes[0];
             int numLabels = config.Training.LayerSizes[^1];
-            DataSet dataPoints = CSVParser.Parse(config.Training.TrainingSetPath,numFeatures,numLabels);
+            DataSet dataPoints = CSVParser.Parse(config.Dataset.TrainingSetPath,numFeatures,numLabels);
             
             using (var window = new TrainingVisualizer(800, 800, "Gradient Descent Visualization",config.Training.LayerSizes))
             {
@@ -31,7 +31,7 @@ namespace simple_network {
         static void RunImageDatasetVisualization() {
             Config config = new();
 
-            ImageSet set = new(config.Training.ImagePreviewCount);
+            ImageSet set = new(config.Dataset.ImagePreviewCount);
 
             using (var window = new ImageVisualizer(800, 800, "Digit Visualization",set)) {
                 window.Run();
@@ -41,9 +41,9 @@ namespace simple_network {
         static void RunImageClassificationTraining() {
             Config config = new Config();
 
-            ImageSet trainingSet = new(-1,config.Training.TrainingSetPath);
+            ImageSet trainingSet = new(-1,config.Dataset.TrainingSetPath);
             ImageSet testingSet = config.Training.DoAccuracyCheck
-                ? new(-1,config.Training.TestingSetPath)
+                ? new(-1,config.Dataset.TestingSetPath)
                 : new();
 
             Network network = new(config.Training.LayerSizes);
@@ -82,7 +82,7 @@ namespace simple_network {
         static void RunPretrainedImageClassification() {
             Config config = new();
 
-            ImageSet testingSet = new(-1,config.ImageClassification.Dataset);
+            ImageSet testingSet = new(-1,config.Dataset.TestingSetPath);
 
             Network network = NetworkFile.LoadNetwork(config.ImageClassification.StoredNetworkFile);
 
@@ -122,15 +122,15 @@ namespace simple_network {
 
             // RunImageDrawingClassification();
 
-            if (config.Training.IsImage && config.Training.DoImagePreview) {
+            if (config.Dataset.IsImage && config.Dataset.DoImagePreview) {
                 RunImageDatasetVisualization();
             }
 
             if (config.Training.DoTraining) {
-                if (config.Training.IsCSVDataset) {
+                if (config.Dataset.IsCSV) {
                     Run2dDataSetVisualization();
                 }
-                else if (config.Training.IsImage) {
+                else if (config.Dataset.IsImage) {
                     RunImageClassificationTraining();
                 }
                 else {
@@ -139,7 +139,7 @@ namespace simple_network {
             }
 
             if (config.ImageClassification.DoClassification) {
-                if (config.ImageClassification.DoDatasetAccuracyCheck) {
+                if (config.ImageClassification.DoAccuracyCheck) {
                     RunPretrainedImageClassification();
                 }
 
@@ -147,7 +147,7 @@ namespace simple_network {
                     RunImageDrawingClassification();
                 }
 
-                if (!config.ImageClassification.DoDatasetAccuracyCheck && !config.ImageClassification.DoDrawingMode) {
+                if (!config.ImageClassification.DoAccuracyCheck && !config.ImageClassification.DoDrawingMode) {
                     Config.PrintConfigIssue("Nothing was run.\n ... Either Program.ImageClassification.DoDrawingMode or Program.ImageClassification.DatasetAccuracyCheck.DoDatasetAccuracyCheck should be true");
                 }
             }
