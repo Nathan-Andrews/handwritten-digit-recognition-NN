@@ -1,0 +1,2 @@
+This dataset has been taken from the MNIST dataset of handwritten digits.
+http://yann.lecun.com/exdb/mnist/
