@@ -60,7 +60,32 @@ Details on the idx file format: [http://yann.lecun.com/exdb/mnist/](http://yann.
 ```
 
 ## Usage
-
+To access different built in features you must edit `config.json`  
+- `Program`
+   - `ImageClassification`
+      - `DoClassification : bool` controls whether a pretrained network should be loaded and used for classification
+      - `StoredNetworkFile : string` the name of the pretrained network file found in `./data/stored networks/`
+      - `DoDrawingMode : bool` controls whether the simple drawing program is opened, and the drawing run through the pretrained network
+      - `DoAccuracyCheck : bool` contols whether the dataset found in `Program.Dataset.TestingSetPath` is used to determine the % accuracy of the pretrained network
+   - `Training`
+      - `DoTraining : bool` control whether training is done
+      - `Hyperparameters`
+         - `LayerSizes : int[]` the number of nodes in each layer, the first element is the input layer, and the last element is the output layer, any layers between are the hidden layers.  For the image dataset input should be `784` and output should be `10`
+         - `MiniBatchSize : int` the size of the minibatch used in training
+         - `LearningRate : double` the learning rate of the neural network
+      - `Storage`
+         - `DoNetworkFile : bool` controls whether the neural network is stored as a file once training is finished
+         - `NetworkFile : string` name of the file that the neural network will be stored in
+         - `DoOverwrite : bool` controls whether any previous network files with the same name should be overwritten, or if it should create a new file by adding a number to the end of the filename
+      - `DoAccuracyCheck : bool` controls whether the network prints out the accuracy of the neural network every 10 epochs
+   - `Dataset`
+      - `TrainingSetPath : string` path to the dataset used to train the neural network
+      - `TestingSetPath : string` path to the dataset used to check the accuracy of the neural network
+      - `Format`
+         - `IsImage : bool` whether the data is in the idx format or not
+         - `IsCSV : bool` whether the data is in the csv format (mutually exclusive with IsImage)
+         - `DoImagePreview : bool` controls whether the image dataset is visualized (only considered if IsImage is also true)
+         - `ImagePreviewCount : int` the amount of images to load in the image preview
 
 ## Contact
 
