@@ -4,8 +4,8 @@
 [Features](#features)  
 [Technologies Used](#technologies-used)  
 [Dataset](#dataset)  
-[Getting Started](#getting-started)  
 [Prerequisites](#prerequisites)  
+[Getting Started](#getting-started)  
 [Usage](#usage)  
 [Contact](#contact)  
 
@@ -19,7 +19,7 @@ The purpose of this project was to help me learn about Machine Learning and Comp
 - Neural Network implementation
    - Parallel gradient descent
 - Training Visualization
-   - A training visualization for 2d datasets, that shows the classification boundry changing as the network trains
+   - A training visualization for 2d datasets, that shows the classification boundary changing as the network trains
 - Handwritten Digit Recognition
    - Trained Using the [MNIST Dataset of Handwritten Digits](http://yann.lecun.com/exdb/mnist/)
       - A class to handle the custom idx file format of the dataset.
@@ -66,7 +66,7 @@ To access different built in features you must edit `config.json`
       - `DoClassification : bool` controls whether a pretrained network should be loaded and used for classification  
       - `StoredNetworkFile : string` the name of the pretrained network file found in `./data/stored networks/`  
       - `DoDrawingMode : bool` controls whether the simple drawing program is opened, and the drawing run through the pretrained network  
-      - `DoAccuracyCheck : bool` contols whether the dataset found in `Program.Dataset.TestingSetPath` is used to determine the % accuracy of the pretrained network  
+      - `DoAccuracyCheck : bool` controls whether the dataset found in `Program.Dataset.TestingSetPath` is used to determine the % accuracy of the pretrained network  
    - `Training`  
       - `DoTraining : bool` control whether training is done  
       - `Hyperparameters`  
@@ -85,7 +85,52 @@ To access different built in features you must edit `config.json`
          - `IsImage : bool` whether the data is in the idx format or not  
          - `IsCSV : bool` whether the data is in the csv format (mutually exclusive with IsImage)  
          - `DoImagePreview : bool` controls whether the image dataset is visualized (only considered if IsImage is also true)  
-         - `ImagePreviewCount : int` the amount of images to load in the image preview  
+         - `ImagePreviewCount : int` the amount of images to load in the image preview
+
+Example Config File:
+```
+{
+    "Program": {
+        "ImageClassification" : {
+            "DoClassification" : true,
+            "StoredNetworkFile" : "digit_recognitionV2.weights-ubyte",
+            "DoDrawingMode" : true,
+            "DoAccuracyCheck" : false
+        },
+
+        "Training" : {
+            "DoTraining" : false,
+
+            "Hyperparameters" : {
+                "LayerSizes" : [784,100,10],
+                "MiniBatchSize" : 10,
+                "LearningRate" : 0.1
+            },
+
+            "Storage" : {
+                "DoNetworkFile" : false,
+                "NetworkFile" : "digit_recognition.weights-ubyte",
+                "DoOverwrite" : false
+            },
+
+            "DoAccuracyCheck" : false
+        },
+
+        "Dataset" : {
+            "TrainingSetPath" : "./data/training/MNIST_ORG/train",
+            "TestingSetPath" : "./data/training/MNIST_ORG/t10k",
+            
+            "Format" : {
+                "IsImage" : true,
+                "IsCSV" : false,
+
+                "DoImagePreview" : false,
+                "ImagePreviewCount" : 20
+            }
+        }
+    }
+}
+```
        
 About the DataSet class:  
 Anyone wishing to modify the code to train off of a different dataset, should make the dataset load into a DataSet class.  
