@@ -1,8 +1,6 @@
 namespace DigitRecognition.ImageHandling {
     public static class ImageProcessor{
         public static Image RandomizeImage(Image old) {
-            Random random= new();
-
             Image image = Scale(old,GenerateNormalRandom(1.0,0.2) - 0.1);
             image = Transform(image,GenerateNormalRandom(0.0,2.5), GenerateNormalRandom(0.0,1.5));
             image = Rotate(image,GenerateNormalRandom(0.0,0.25));

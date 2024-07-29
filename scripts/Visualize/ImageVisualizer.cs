@@ -6,10 +6,10 @@ namespace DigitRecognition.Visualization {
     public class ImageVisualizer : Visualize {
         private int _shaderProgram;
         private int _vertexArrayObject;
-        private ImageSet _imageSet;
+        private readonly ImageSet _imageSet;
 
         private int _renderedDigitIndex = 0;
-        private ImageHandling.Image _currentDigit;
+        private Image _currentDigit;
 
 
         public ImageVisualizer(int width, int height, string title, ImageSet imageSet) : base(width, height,title)

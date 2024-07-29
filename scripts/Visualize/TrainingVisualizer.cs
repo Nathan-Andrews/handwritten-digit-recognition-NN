@@ -13,9 +13,9 @@ namespace DigitRecognition.Visualization {
         private int _boundryVertexArrayObject;
         private int _boundryTexture;
         private int _pointVertexArrayObject;
-        private Vector2[] _pointsArray = new Vector2[100];
-        private int[] _pointsClasses = new int[100];
-        private float _pointRadius = 0.02f;
+        private readonly Vector2[] _pointsArray = new Vector2[100];
+        private readonly int[] _pointsClasses = new int[100];
+        private readonly float _pointRadius = 0.02f;
         private int _pointCount = 0;
 
         public Network network;
@@ -23,7 +23,7 @@ namespace DigitRecognition.Visualization {
         private bool _continueTraining = true;
         // private object _lock = new object();
         private int _epochCounter = 0;
-        private Thread _trainingThread;
+        private readonly Thread _trainingThread;
 
         public TrainingVisualizer(int width, int height, string title, int[] layerSizes) : base(width, height, title) {
             network = new(layerSizes);

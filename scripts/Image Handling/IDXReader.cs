@@ -5,7 +5,7 @@ namespace DigitRecognition.ImageHandling {
     public class IDXReader {
         // made to read the idx file format used in the mnist handwrited digits database
         // http://yann.lecun.com/exdb/mnist/
-        byte[] bytes;
+        readonly byte[] bytes;
 
         public IDXReader(string filename) {
             if (filename == null || !File.Exists(filename)) {

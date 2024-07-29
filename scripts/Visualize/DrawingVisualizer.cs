@@ -18,12 +18,12 @@ namespace DigitRecognition.Visualization {
         private float _lastCursorX = 0;
         private float _lastCursorY = 0;
 
-        private Thread _cursorThread;
+        private readonly Thread _cursorThread;
         private bool _runThread = true;
 
         private HashSet<Vector2> _cursorPositionBuffer;
 
-        private object _lock = new();
+        private readonly object _lock = new();
 
         public Network? _network;
         private static readonly string[] spelledDigits = {"Zero","One","Two","Three","Four","Five","Six","Seven","Eight","Nine"};

@@ -2,7 +2,7 @@ using OpenTK.Mathematics;
 
 
 namespace DigitRecognition.DataHandling {
-    public struct DataPoint {
+    public readonly struct DataPoint {
         public readonly double[] feature;
         public readonly int label;
         public readonly double[] expectedOutput;

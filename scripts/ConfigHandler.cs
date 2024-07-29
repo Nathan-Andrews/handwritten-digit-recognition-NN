@@ -51,11 +51,11 @@ namespace DigitRecognition {
             DoAccuracyCheck = Check("DoAccuracyCheck");
         }
 
-        bool Check(string jsonPath) {
+        static bool Check(string jsonPath) {
             return Config.Check($"ImageClassification:{jsonPath}");
         }
 
-        string Get(string jsonPath) {
+        static string Get(string jsonPath) {
             return Config.Get($"ImageClassification:{jsonPath}");
         }
     }
@@ -81,11 +81,11 @@ namespace DigitRecognition {
             DoAccuracyCheck = Check("DoAccuracyCheck");
         }
 
-        bool Check(string jsonPath) {
+        static bool Check(string jsonPath) {
             return Config.Check($"Training:{jsonPath}");
         }
 
-        string Get(string jsonPath) {
+        static string Get(string jsonPath) {
             return Config.Get($"Training:{jsonPath}");
         }
 
