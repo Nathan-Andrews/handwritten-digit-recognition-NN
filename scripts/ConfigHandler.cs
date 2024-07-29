@@ -120,11 +120,11 @@ namespace DigitRecognition {
             ImagePreviewCount = int.Parse(Get("Format:ImagePreviewCount"));
         }
 
-        bool Check(string jsonPath) {
+        static bool Check(string jsonPath) {
             return Config.Check($"Dataset:{jsonPath}");
         }
 
-        string Get(string jsonPath) {
+        static string Get(string jsonPath) {
             return Config.Get($"Dataset:{jsonPath}");
         }
     }
