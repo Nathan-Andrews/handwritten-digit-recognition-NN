@@ -1,15 +1,14 @@
 # Handwritten Digit Recognition Neural Network in C#
 ## Table of Contents
-Introduction
-Features
-Technologies Used
-Getting Started
-Prerequisites
-Installation
-Usage
-Contributing
-License
-Contact
+[Introduction](#introduction)  
+[Features](#features)  
+[Technologies Used](#technologies-used)  
+[Dataset](#dataset)  
+[Getting Started](#getting-started)  
+[Prerequisites](#prerequisites)  
+[Installation](#installation)  
+[Usage](#usage)  
+[Contact](#contact)  
 
 ## Introduction
 A brief description of what your project does and why you created it.
@@ -20,8 +19,7 @@ List of features or functionalities your project offers.
 ## Technologies Used
 List of technologies and tools you used in the project (e.g., programming languages, frameworks, libraries).
 
-Languages: C#, GLSL
-
+Languages: C#, GLSL  
 Libraries: [OpenTK](https://opentk.net/)
 
 ## Dataset
