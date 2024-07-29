@@ -11,13 +11,24 @@
 [Contact](#contact)  
 
 ## Introduction
-A brief description of what your project does and why you created it.
+This project is a Neural Network implementation in C#.  
+The network implements a threadsafe approach to Gradient Descent, where each datapoint in the batch is run through backpropagation in parallel for faster training.  
+After making the framework I used it to train a network to recognize handwritten digits.  
+The purpose of this project was to help me learn about Machine Learning and Computer Vision.
 
 ## Features
-List of features or functionalities your project offers.
+- Neural Network implementation
+   - Parallel gradient descent
+- Training Visualization
+   - A training visualization for 2d datasets, that shows the classification boundry changing as the network trains
+- Handwritten Digit Recognition
+   - Trained Using the [MNIST Dataset of Handwritten Digits](http://yann.lecun.com/exdb/mnist/)
+      - A class to handle the custom idx file format of the dataset.
+      - A visualization of the imported images.
+      - An image processor that randomly scales, transforms and rotates the images in the dataset so that the neural network doesn't overfit.
+   - A simple drawing program that runs your drawing into the neural network to predict what digit it is.
 
 ## Technologies Used
-List of technologies and tools you used in the project (e.g., programming languages, frameworks, libraries).
 
 Languages: C#, GLSL  
 Libraries: [OpenTK](https://opentk.net/)
@@ -56,8 +67,6 @@ Copy code
 Instructions and examples on how to use your project. Include screenshots or code snippets if applicable.
 
 ## Contact
-Ways to get in touch with you for further questions or contributions. For example:
-
 css
 Copy code
 Your Name - andrewsnathan2003@gmail.com
