@@ -6,7 +6,6 @@
 [Dataset](#dataset)  
 [Getting Started](#getting-started)  
 [Prerequisites](#prerequisites)  
-[Installation](#installation)  
 [Usage](#usage)  
 [Contact](#contact)  
 
@@ -44,16 +43,12 @@ Labels are `0-9`, stored in `./data/training/MNIST_ORG/{set}-labels.idx1-ubyte`.
 
 Details on the idx file format: [http://yann.lecun.com/exdb/mnist/](http://yann.lecun.com/exdb/mnist/)
 
-## Getting Started
-Instructions on how to set up and run your project locally.
-
 ## Prerequisites
 [dotnet 7.0.1](https://dotnet.microsoft.com/en-us/download/dotnet/7.0)
 
-## Installation
+## Getting Started
 
-bash
-Copy code
+```
 1. Clone the repository
    git clone https://github.com/Nathan-Andrews/handwritten-digit-recognition-NN.git
 2. Navigate to the project directory
@@ -62,12 +57,13 @@ Copy code
    dotnet restore
 4. Start the project
    dotnet run
+```
 
 ## Usage
-Instructions and examples on how to use your project. Include screenshots or code snippets if applicable.
+
 
 ## Contact
-css
-Copy code
-Your Name - andrewsnathan2003@gmail.com
-Project Link: https://github.com/Nathan-Andrews/handwritten-digit-recognition-NN
+
+Nathan Andrews - andrewsnathan2003@gmail.com  
+Project Link: [https://github.com/Nathan-Andrews/handwritten-digit-recognition-NN](https://github.com/Nathan-Andrews/handwritten-digit-recognition-NN)
+
