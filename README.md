@@ -20,16 +20,19 @@ The purpose of this project was to help me learn about Machine Learning and Comp
    - Parallel gradient descent
 - Training Visualization
    - A training visualization for 2d datasets, that shows the classification boundary changing as the network trains
+![A gif demonstrating the 2d dataset training visualization](https://github.com/user-attachments/assets/bda2d458-a6c7-4db7-9111-e103856e934f)
 - Handwritten Digit Recognition
    - Trained Using the [MNIST Dataset of Handwritten Digits](http://yann.lecun.com/exdb/mnist/)
       - A class to handle the custom idx file format of the dataset.
       - A visualization of the imported images.
       - An image processor that randomly scales, transforms and rotates the images in the dataset so that the neural network doesn't overfit.
+![A gif of demonstrating the image processor and dataset visualizer](https://github.com/user-attachments/assets/0e3ea586-7c70-4f7a-a4cd-59917836bd91)
    - A simple drawing program that runs your drawing into the neural network to predict what digit it is.
+![A gif of the digit drawing classification demonstrating all 10 digits](https://github.com/user-attachments/assets/474102fe-bf73-4098-98b2-8df8d3306026)
 
 ## Technologies Used
 
-Languages: C#, GLSL  
+Languages: [C#](https://learn.microsoft.com/en-us/dotnet/csharp/), [GLSL](https://www.khronos.org/opengl/wiki/Core_Language_(GLSL))  
 Libraries: [OpenTK](https://opentk.net/)
 
 ## Dataset
