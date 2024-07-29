@@ -86,6 +86,17 @@ To access different built in features you must edit `config.json`
          - `IsCSV : bool` whether the data is in the csv format (mutually exclusive with IsImage)
          - `DoImagePreview : bool` controls whether the image dataset is visualized (only considered if IsImage is also true)
          - `ImagePreviewCount : int` the amount of images to load in the image preview
+       
+About the DataSet class:  
+Anyone wishing to modify the code to train off of a different dataset, should make the dataset load into a DataSet class.  
+The DataSet class functions similar to a List.  A list of DataPoint objects
+   DataPoint(double[] feature, int label, int numLabels):
+      - `double[] feature` an array of doubles which will be the inputs to the neural network.  Should be the same dimension as the neural network input
+      - `int label` the class of this datapoint
+      - `int numLabels` the number of classes in the neural network.  Should be the max value of `label`.  Should be the same dimension as the neural network output
+`DataSet.Add(DataPoint dataPoint)` adds a datapoint to the end of the dataset
+`DataPoint GetElement(int n)` gets the nth element in the dataset
+`int size` the number of elements in the dataset
 
 ## Contact
 
