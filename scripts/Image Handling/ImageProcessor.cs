@@ -1,5 +1,3 @@
-using System.Diagnostics;
-
 namespace DigitRecognition.ImageHandling {
     public static class ImageProcessor{
         public static Image RandomizeImage(Image old) {

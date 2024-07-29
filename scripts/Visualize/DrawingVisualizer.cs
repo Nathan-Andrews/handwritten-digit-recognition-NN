@@ -1,10 +1,6 @@
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
-using OpenTK.Windowing.Desktop;
-using OpenTK;
-using OpenTK.Input;
-using OpenTK.Platform.Windows;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using DigitRecognition.NeuralNetwork;
 using DigitRecognition.ImageHandling;

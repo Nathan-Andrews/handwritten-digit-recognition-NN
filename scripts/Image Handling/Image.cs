@@ -1,5 +1,3 @@
-using System.Runtime.CompilerServices;
-
 namespace DigitRecognition.ImageHandling {
     public class Image {
         public int size; // assume image is square

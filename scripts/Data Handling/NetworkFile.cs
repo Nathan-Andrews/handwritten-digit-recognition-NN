@@ -1,4 +1,3 @@
-using System.Text;
 using DigitRecognition.NeuralNetwork;
 
 namespace DigitRecognition.DataHandling {

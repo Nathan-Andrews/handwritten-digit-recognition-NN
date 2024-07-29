@@ -1,9 +1,4 @@
-using System;
 using System.Diagnostics;
-using System.IO;
-using System.Numerics;
-using Microsoft.VisualBasic;
-using OpenTK.Graphics.OpenGL;
 
 
 namespace DigitRecognition.ImageHandling {

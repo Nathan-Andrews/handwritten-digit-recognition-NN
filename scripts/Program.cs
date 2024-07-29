@@ -1,13 +1,4 @@
-﻿
-
-using System.Diagnostics;
-using System.Runtime.InteropServices;
-using Microsoft.Extensions.Configuration;
-using System;
-using System.IO;
-using System.Collections.Generic;
-using OpenTK.Graphics.ES11;
-using DigitRecognition.Visualization;
+﻿using DigitRecognition.Visualization;
 using DigitRecognition.DataHandling;
 using DigitRecognition.ImageHandling;
 using DigitRecognition.NeuralNetwork;

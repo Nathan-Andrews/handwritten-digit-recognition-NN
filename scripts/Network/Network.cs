@@ -1,5 +1,3 @@
-
-using System.Runtime.CompilerServices;
 using DigitRecognition.DataHandling;
 
 namespace DigitRecognition.NeuralNetwork {
