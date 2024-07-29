@@ -6,9 +6,11 @@ using OpenTK.Windowing.Desktop;
 using System;
 using System.IO;
 using System.Threading;
+using DigitRecognition.NeuralNetwork;
+using DigitRecognition.DataHandling;
 
 
-namespace simple_network {
+namespace DigitRecognition.Visualization {
     public class TrainingVisualizer : Visualize
     {
         private int _boundryShaderProgram;

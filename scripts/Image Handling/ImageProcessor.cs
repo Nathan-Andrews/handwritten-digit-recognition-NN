@@ -1,6 +1,6 @@
 using System.Diagnostics;
 
-namespace simple_network {
+namespace DigitRecognition.ImageHandling {
     public static class ImageProcessor{
         public static Image RandomizeImage(Image old) {
             Random random= new();

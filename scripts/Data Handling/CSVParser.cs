@@ -2,7 +2,7 @@ using System.Reflection.Emit;
 using Microsoft.VisualBasic.FileIO;
 
 
-namespace simple_network {
+namespace DigitRecognition.DataHandling {
     public static class CSVParser {
         public static DataSet Parse(string path, int numFeatures, int numLabels) {
             Console.WriteLine("Parsing");

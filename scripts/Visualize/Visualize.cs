@@ -9,7 +9,7 @@ using System.IO;
 using System.Threading;
 
 
-namespace simple_network {
+namespace DigitRecognition.Visualization {
     public class Visualize : GameWindow
     {
 

@@ -1,6 +1,7 @@
 using System.Diagnostics;
+using DigitRecognition.DataHandling;
 
-namespace simple_network {
+namespace DigitRecognition.ImageHandling {
     public class ImageSet {
         // public static 
         public Image[] images;

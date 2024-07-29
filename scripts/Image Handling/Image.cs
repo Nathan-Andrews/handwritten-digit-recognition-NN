@@ -1,6 +1,6 @@
 using System.Runtime.CompilerServices;
 
-namespace simple_network {
+namespace DigitRecognition.ImageHandling {
     public class Image {
         public int size; // assume image is square
 

@@ -6,15 +6,17 @@ using OpenTK;
 using OpenTK.Input;
 using OpenTK.Platform.Windows;
 using OpenTK.Windowing.GraphicsLibraryFramework;
+using DigitRecognition.NeuralNetwork;
+using DigitRecognition.ImageHandling;
 
-namespace simple_network {
+namespace DigitRecognition.Visualization {
     public class DrawingVisualizer : Visualize {
         private int _textureShaderProgram;
         private int _textureVertexArrayObject;
         private int _drawingTexture;
 
-        private Image _drawnDigit;
-        private Image _digit;
+        private ImageHandling.Image _drawnDigit;
+        private ImageHandling.Image _digit;
 
         private bool _mouseDown = false;
         private float _lastCursorX = 0;
@@ -33,7 +35,7 @@ namespace simple_network {
         public DrawingVisualizer(int width, string title) : base(width, width, title)
         {
             _digit = new(28);
-            _drawnDigit = new Image(width*width);
+            _drawnDigit = new(width*width);
             _cursorPositionBuffer = new HashSet<Vector2>();
             _cursorThread = new Thread(CursorThread);
         }

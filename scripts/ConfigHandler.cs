@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Configuration;
 
-namespace simple_network {
+namespace DigitRecognition {
     class TrainingLayerConfig {
         public List<int>? LayerSizes { get; set; }
     }

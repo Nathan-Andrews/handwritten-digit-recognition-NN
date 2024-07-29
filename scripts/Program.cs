@@ -7,8 +7,14 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using OpenTK.Graphics.ES11;
+using DigitRecognition.Visualization;
+using DigitRecognition.DataHandling;
+using DigitRecognition.ImageHandling;
+using DigitRecognition.NeuralNetwork;
 
-namespace simple_network {
+// using simple_network;
+
+namespace DigitRecognition {
     public class Program {
         private static ConsoleKey keyPressed = ConsoleKey.A; 
 

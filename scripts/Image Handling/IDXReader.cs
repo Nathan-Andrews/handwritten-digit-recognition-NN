@@ -6,7 +6,7 @@ using Microsoft.VisualBasic;
 using OpenTK.Graphics.OpenGL;
 
 
-namespace simple_network {
+namespace DigitRecognition.ImageHandling {
     public class IDXReader {
         // made to read the idx file format used in the mnist handwrited digits database
         // http://yann.lecun.com/exdb/mnist/

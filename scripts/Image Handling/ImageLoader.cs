@@ -1,4 +1,4 @@
-namespace simple_network {
+namespace DigitRecognition.ImageHandling {
     public static class ImageLoader {
         public static Image[] GetImageSet(IDXReader imagesReader,IDXReader labelsReader,int imageCount) {
             Image[] images = new Image[imageCount];

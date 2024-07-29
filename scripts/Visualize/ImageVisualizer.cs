@@ -4,15 +4,16 @@ using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using System;
+using DigitRecognition.ImageHandling;
 
-namespace simple_network {
+namespace DigitRecognition.Visualization {
     public class ImageVisualizer : Visualize {
         private int _shaderProgram;
         private int _vertexArrayObject;
         private ImageSet _imageSet;
 
         private int _renderedDigitIndex = 0;
-        private Image _currentDigit;
+        private ImageHandling.Image _currentDigit;
 
 
         public ImageVisualizer(int width, int height, string title, ImageSet imageSet) : base(width, height,title)

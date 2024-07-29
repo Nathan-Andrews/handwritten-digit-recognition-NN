@@ -1,6 +1,7 @@
 using System.Text;
+using DigitRecognition.NeuralNetwork;
 
-namespace simple_network {
+namespace DigitRecognition.DataHandling {
     public static class NetworkFile {
         // network storage format
         // This format describes how a neural network is stored in a file.

@@ -1,7 +1,7 @@
 using OpenTK.Mathematics;
 
 
-namespace simple_network {
+namespace DigitRecognition.DataHandling {
     public struct DataPoint {
         public readonly double[] feature;
         public readonly int label;

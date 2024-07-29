@@ -1,4 +1,4 @@
-namespace simple_network {
+namespace DigitRecognition.NeuralNetwork {
     public class NetworkData {
         public LayerData[] layerData;
 

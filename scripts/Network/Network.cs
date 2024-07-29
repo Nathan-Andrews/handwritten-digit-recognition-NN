@@ -1,7 +1,8 @@
 
 using System.Runtime.CompilerServices;
+using DigitRecognition.DataHandling;
 
-namespace simple_network {
+namespace DigitRecognition.NeuralNetwork {
 
     public class Network {
         public Layer[] layers;

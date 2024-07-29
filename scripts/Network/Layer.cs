@@ -1,4 +1,4 @@
-namespace simple_network {
+namespace DigitRecognition.NeuralNetwork {
     public class Layer {
         public int numInputs, numOutputs;
         public double[,] weights;

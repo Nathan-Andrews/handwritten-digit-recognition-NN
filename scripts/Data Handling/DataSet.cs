@@ -2,7 +2,7 @@ using System.Drawing;
 using OpenTK.Mathematics;
 
 
-namespace simple_network {
+namespace DigitRecognition.DataHandling {
     public class DataSet {
         private DataPoint[] dataArray;
         private int arraySize;
