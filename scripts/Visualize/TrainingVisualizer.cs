@@ -51,7 +51,7 @@ namespace DigitRecognition.Visualization {
             SetClearColor();
 
             // Start training thread
-            _trainingThread.Start();
+            // _trainingThread.Start();
 
         }
 
@@ -170,6 +170,13 @@ namespace DigitRecognition.Visualization {
                 // {
                 //     UpdateDecisionBoundaryTexture();
                 // }
+            }
+        }
+
+        protected override void KeyPressedSpace() {
+            if (!_trainingThread.IsAlive) {
+                Console.WriteLine("Training Started");
+                _trainingThread.Start();
             }
         }
 
