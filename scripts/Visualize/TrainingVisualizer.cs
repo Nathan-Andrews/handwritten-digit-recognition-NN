@@ -21,7 +21,7 @@ namespace DigitRecognition.Visualization {
         public Network network;
         public DataSet? _dataPoints;
         private bool _continueTraining = true;
-        // private object _lock = new object();
+        private object _lock = new object();
         private int _epochCounter = 0;
         private readonly Thread _trainingThread;
 
@@ -78,36 +78,31 @@ namespace DigitRecognition.Visualization {
             int height = 800;
             float[] data = new float[width * height * 3];
 
-            // Network networkCopy;
+            lock (_lock) {
+                Parallel.For(0, height, (y) => {
+                    Parallel.For(0, width, (x) => {
+                        // double inputX = (double)x / width * 2.0f - 1.0f;
+                        // double inputY = (double)y / height * 2.0f - 1.0f;
+                        double[] input = new double[2];
+                        input[0] = (double)x / width;
+                        input[1] = (double)y / height;
+                        int classification = network.Classify(input);
 
-            // lock (_lock) {
-            //     networkCopy = new Network(network);
-            // }
-            for (int y = 0; y < height; y++)
-            {
-                for (int x = 0; x < width; x++)
-                {
-                    // double inputX = (double)x / width * 2.0f - 1.0f;
-                    // double inputY = (double)y / height * 2.0f - 1.0f;
-                    double[] input = new double[2];
-                    input[0] = (double)x / width;
-                    input[1] = (double)y / height;
-                    int classification = network.Classify(input);
-
-                    int index = (y * width + x) * 3;
-                    if (classification == 0)
-                    {
-                        data[index] = blueColor.X;
-                        data[index + 1] = blueColor.Y;
-                        data[index + 2] = blueColor.Z;
-                    }
-                    else
-                    {
-                        data[index] = redColor.X;
-                        data[index + 1] = redColor.Y;
-                        data[index + 2] = redColor.Z;
-                    }
-                }
+                        int index = (y * width + x) * 3;
+                        if (classification == 0)
+                        {
+                            data[index] = blueColor.X;
+                            data[index + 1] = blueColor.Y;
+                            data[index + 2] = blueColor.Z;
+                        }
+                        else
+                        {
+                            data[index] = redColor.X;
+                            data[index + 1] = redColor.Y;
+                            data[index + 2] = redColor.Z;
+                        }
+                    });
+                });
             }
 
             GL.BindTexture(TextureTarget.Texture2D, _boundryTexture);
@@ -159,17 +154,11 @@ namespace DigitRecognition.Visualization {
         {
             while (_continueTraining)
             {
-                // lock (_lock)
+                lock (_lock)
                 {
                     if (_dataPoints != null) network.Fit(_dataPoints,0.1);
                     _epochCounter++;
                 }
-
-                // Update the decision boundary texture occasionally to reduce CPU usage
-                // if (_epochCounter % 10 == 0)
-                // {
-                //     UpdateDecisionBoundaryTexture();
-                // }
             }
         }
 
@@ -184,7 +173,11 @@ namespace DigitRecognition.Visualization {
         {
             base.OnUnload();
             _continueTraining = false;
-            _trainingThread.Join();
+
+            if (_trainingThread.IsAlive) {
+                _trainingThread.Join();
+            }
+
             GL.DeleteVertexArray(_boundryVertexArrayObject);
             GL.DeleteVertexArray(_pointVertexArrayObject);
             GL.DeleteProgram(_boundryShaderProgram);

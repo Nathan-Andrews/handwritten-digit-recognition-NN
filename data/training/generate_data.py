@@ -4,13 +4,18 @@ import math
 
 
 # def classify(x,y):
-#     if (1.5 * (y ** 1.7) + 0.7 * y + 1.6) > ((x ** 2) + 2 * x + 1):
+#     if (0.5 * (y ** 0.7) + 2.3 * y + 1.8) > ((x ** 2) - 0.5 * x + 3.2):
 #         return 1
 #     return 0
-def classify(x,y):
-    if (0.5 * (y ** 0.7) + 2.3 * y + 1.8) > ((x ** 2) - 0.5 * x + 3.2):
+
+def classify(x, y):
+    # Complex boundary using a combination of sine and cosine functions
+    boundary = 0.6 + 0.4 * math.sin(3.2 * math.pi * x) + 0.38 * math.cos(2.8 * math.pi * y)
+    
+    if y < boundary:
+        return 0
+    else:
         return 1
-    return 0
 
 def jiggle(x):
     return (x / 10) + (random.random() / 10 / 2)
@@ -33,7 +38,7 @@ for x in range(0,10):
 fields = ['feature_1','feature_2', 'class']
 
 # name of csv file
-filename = "data2.csv"
+filename = "./data/training/data3.csv"
 
 # writing to csv file
 with open(filename, 'w') as csvfile:
